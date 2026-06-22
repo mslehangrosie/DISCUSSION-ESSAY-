@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ms Lê Hằng English - Interactive Writing Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* --- CORE STYLES & VARIABLES --- */
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --bg-gradient: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            --text-dark: #2b2d42;
+            --text-light: #f8f9fa;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --success-color: #00D26A;
+            --error-color: #FF4757;
+            --border-radius: 20px;
+            --box-shadow-3d: 0 8px 0px rgba(0, 0, 0, 0.15);
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            opacity: 0.15;
+        }
+
+        #theme-overlay {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.08;
+            transition: background 0.5s ease;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- HEADER SECTION --- */
+        header {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 4px solid #e2e8f0;
+            position: relative;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--primary-color);
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        header p {
+            font-size: 14px;
+            font-weight: 700;
+            color: #718096;
+            background: #edf2f7;
+            padding: 4px 12px;
+            border-radius: 50px;
+            display: inline-block;
+        }
+
+        /* --- MAIN LAYOUT CONTAINER --- */
+        .main-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 25px;
+            max-width: 1500px;
+            width: 100%;
+            margin: 25px auto;
+            padding: 0 25px;
+            flex: 1;
+        }
+
+        /* --- SIDEBAR (LEFT) --- */
+        .sidebar {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 3px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: fit-content;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-dark);
+            border-bottom: 3px solid #edf2f7;
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .topic-btn {
+            background: white;
+            border: 3px solid #e2e8f0;
+            border-bottom: 6px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-weight: 700;
+            font-size: 15px;
+            color: #4a5568;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .topic-btn:hover {
+            transform: translateY(-2px);
+            border-color: #cbd5e0;
+        }
+
+        .topic-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--secondary-color);
+            border-bottom: 6px solid #2b3a8c;
+        }
+
+        .topic-btn .topic-meta {
+            font-size: 11px;
+            text-transform: uppercase;
+            opacity: 0.7;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- CONTENT AREA (RIGHT) --- */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Question Box Styling */
+        .question-box {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            border: 4px solid var(--primary-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            position: relative;
+        }
+
+        .question-box .badge {
+            position: absolute;
+            top: -15px;
+            left: 25px;
+            background: var(--primary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .question-box h3 {
+            font-size: 19px;
+            font-weight: 800;
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin-top: 5px;
+        }
+
+        /* Tab Navigation Container */
+        .tabs-container {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 3px solid #e2e8f0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tab-nav {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            background: #edf2f7;
+            border-bottom: 3px solid #e2e8f0;
+            padding: 8px 8px 0 8px;
+            gap: 5px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 14px 10px;
+            font-size: 15px;
+            font-weight: 800;
+            color: #718096;
+            cursor: pointer;
+            border-radius: 12px 12px 0 0;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.5);
+            color: var(--text-dark);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 -4px 0px var(--primary-color) inset;
+            position: relative;
+        }
+
+        /* Tab Content Section */
+        .tab-content {
+            padding: 30px;
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- TAB CONTENT TYPOGRAPHY & BLOCKS --- */
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px dashed #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .outline-block, .essay-paragraph {
+            background: #f8fafc;
+            border-left: 5px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 0 15px 15px 0;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .outline-block h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .outline-block p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #4a5568;
+        }
+
+        .highlight-en {
+            color: #d946ef;
+            font-weight: 700;
+            background: #fdf2ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #f5d0fe;
+        }
+
+        /* Essay Smart Translation Features */
+        .essay-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-dark);
+            font-weight: 600;
+            text-align: justify;
+        }
+
+        .translate-btn {
+            background: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            color: #166534;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .translate-btn:hover {
+            background: #dcfce7;
+            transform: scale(1.03);
+        }
+
+        .translation-box {
+            display: none;
+            background: #fffbeb;
+            border: 2px solid #fef3c7;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 12px;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #92400e;
+            font-style: italic;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Vocabulary Table Styles */
+        .vocab-table-container {
+            overflow-x: auto;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .vocab-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .vocab-table th {
+            background: #edf2f7;
+            color: #4a5568;
+            font-weight: 800;
+            padding: 14px;
+            border-bottom: 3px solid #e2e8f0;
+        }
+
+        .vocab-table td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        .vocab-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .word-badge {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .type-badge {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .example-text {
+            display: block;
+            font-size: 13px;
+            color: #718096;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        /* --- GAMIFIED QUIZ SYSTEM SYSTEM --- */
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .quiz-item {
+            background: white;
+            border: 3px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            padding: 22px;
+            position: relative;
+            transition: border-color 0.3s;
+        }
+
+        .quiz-question {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid #e2e8f0;
+            border-bottom: 6px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 700;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            position: relative;
+            outline: none;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            transform: translateY(-2px);
+            border-color: #cbd5e0;
+            background: #f7fafc;
+        }
+
+        .option-btn:active:not(.disabled) {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+
+        /* Quiz Feedback Animations */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        .quiz-item.wrong-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        .option-btn.correct {
+            background: #dcfce7 !important;
+            border-color: var(--success-color) !important;
+            border-bottom: 6px solid #15803d !important;
+            color: #166534 !important;
+        }
+
+        .option-btn.wrong {
+            background: #fee2e2 !important;
+            border-color: var(--error-color) !important;
+            border-bottom: 6px solid #b91c1c !important;
+            color: #991b1b !important;
+        }
+
+        .option-btn.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .option-btn.correct.disabled, .option-btn.wrong.disabled {
+            opacity: 1;
+        }
+
+        .explanation-box {
+            display: none;
+            background: #eff6ff;
+            border: 2px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #1e40af;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .submit-quiz-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .primary-action-btn {
+            background: #ff9f43;
+            color: white;
+            border: none;
+            border-bottom: 6px solid #ee5253;
+            border-radius: var(--border-radius);
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: 0 6px 20px rgba(255, 159, 67, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .primary-action-btn:hover {
+            transform: translateY(-2px);
+            background: #ffa852;
+        }
+
+        .primary-action-btn:active {
+            transform: translateY(4px);
+            border-bottom-width: 2px;
+        }
+
+        /* --- SCORE REPORT SCORING DIALOG --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .score-card {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 6px solid var(--primary-color);
+            position: relative;
+            transform: scale(0.7);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-overlay.active .score-card {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .score-headline {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .score-number {
+            font-size: 64px;
+            font-weight: 900;
+            color: #ff9f43;
+            margin: 15px 0;
+            text-shadow: 3px 3px 0px #edf2f7;
+        }
+
+        .score-feedback {
+            font-size: 16px;
+            font-weight: 700;
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* --- CONFETTI CANVAS --- */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 99;
+            display: block;
+        }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                height: auto;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .tab-nav {
+                grid-template-columns: repeat(2, 1fr);
+                border-radius: 12px;
+            }
+            .tab-btn {
+                border-radius: 8px;
+                font-size: 13px;
+                padding: 10px;
+            }
+            header h1 { font-size: 20px; }
+            .score-card { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="theme-overlay"></div>
+    <canvas id="confetti-canvas"></canvas>
+
+    <header>
+        <h1 id="sys-title">Ms Lê Hằng English</h1>
+        <p id="sys-slogan">Discussion Essay</p>
+    </header>
+
+    <main class="main-container">
+        
+        <aside class="sidebar">
+            <h2>📝 Đề Bài Luyện Tập</h2>
+            <button class="topic-btn active" onclick="switchTopic(0)">
+                <span class="topic-meta">Đề số 01</span>
+                <span>Climate Change & Business</span>
+            </button>
+            <button class="topic-btn" onclick="switchTopic(1)">
+                <span class="topic-meta">Đề số 02</span>
+                <span>Extracurricular Activities vs Academic</span>
+            </button>
+            <button class="topic-btn" onclick="switchTopic(2)">
+                <span class="topic-meta">Đề số 03</span>
+                <span>Transport Pollution Responsibility</span>
+            </button>
+            <button class="topic-btn" onclick="switchTopic(3)">
+                <span class="topic-meta">Đề số 04</span>
+                <span>Executive Salaries & Fairness</span>
+            </button>
+            <button class="topic-btn" onclick="switchTopic(4)">
+                <span class="topic-meta">Đề số 05</span>
+                <span>Juvenile Crime Punishment</span>
+            </button>
+        </aside>
+
+        <section class="content-area">
+            
+            <div class="question-box">
+                <span class="badge" id="current-badge">Đề Bài Đang Chọn</span>
+                <h3 id="current-topic-text">Loading topic...</h3>
+            </div>
+
+            <div class="tabs-container">
+                <nav class="tab-nav">
+                    <button class="tab-btn active" onclick="switchTab(event, 'tab-template')">📋 Template & Outline</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'tab-essay')">✨ Bài Mẫu Chuẩn (7.5+)</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'tab-vocab')">📚 Từ Vựng & Cấu Trúc</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'tab-quiz')">🔥 20 Câu Hỏi Xoáy</button>
+                </nav>
+
+                <div id="tab-template" class="tab-content active">
+                    <div id="template-render-zone"></div>
+                </div>
+
+                <div id="tab-essay" class="tab-content">
+                    <div id="essay-render-zone"></div>
+                </div>
+
+                <div id="tab-vocab" class="tab-content">
+                    <div class="section-title">💡 Bảng Học Thuật Trích Xuất Cao Cấp</div>
+                    <div class="vocab-table-container">
+                        <table class="vocab-table">
+                            <thead>
+                                <tr>
+                                    <th>Từ vựng / Cấu trúc</th>
+                                    <th>Loại từ</th>
+                                    <th>Ý nghĩa & Ngữ cảnh học thuật</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vocab-render-zone"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="tab-quiz" class="tab-content">
+                    <div class="quiz-container" id="quiz-render-zone"></div>
+                    <div class="submit-quiz-container">
+                        <button class="primary-action-btn" onclick="gradeQuiz()">🚀 Nộp Bài Ngay</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="score-modal">
+        <div class="score-card">
+            <div class="score-headline" id="modal-title">Kết Quả Luyện Tập</div>
+            <div class="score-number" id="modal-score">0/20</div>
+            <div class="score-feedback" id="modal-feedback">Lời phê bình đang tải...</div>
+            <button class="primary-action-btn" style="padding:10px 25px; font-size:15px;" onclick="closeModal()">Tiếp tục học 🌟</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA DEPOSITARY FOR ALL 5 ESSAY MODULES ---
+        const essayDataset = [
+            {
+                title: "Climate Change & Business",
+                slogan: "Climate Change & Economic Opportunities",
+                theme: { primary: "#2a9d8f", secondary: "#264653", emoji1: "🌿", emoji2: "🏭" },
+                question: "Some people think that climate change could have a negative effect on business, while others think that it could create more business opportunities. Discuss both views and give your own opinion.",
+                outline: [
+                    { title: "1. Hiểu đề & viết Introduction", desc: "Paraphrase bài viết nêu bật xu hướng toàn cầu về biến đổi khí hậu. Đưa ra lập trường cân bằng nhưng khẳng định thiệt hại áp đảo lợi ích.<br>• Gợi ý Paraphrasing: <span class='highlight-en'>harm businesses</span> (gây thiệt hại cho doanh nghiệp), <span class='highlight-en'>commercial activities</span> (các hoạt động thương mại), <span class='highlight-en'>global phenomenon</span> (các hiện tượng toàn cầu)." },
+                    { title: "2. Gợi ý lập luận & phân BODY (Logical Framework© 40/60)", desc: "Body 1 (40%): Phân tích thời cơ kinh tế tiềm năng cho nhóm công nghệ đổi mới. Body 2 (60%): Nhấn mạnh thiên tai cực đoan tàn phá cơ sở hạ tầng, nông nghiệp diện rộng." },
+                    { title: "3. Viết BODY 1: Lợi ích kinh tế thời cơ", desc: "Topic sentence: Phải thừa nhận rằng, những thách thức liên quan đến khí hậu có thể tạo ra một số cơ hội kinh tế cho các công ty có tầm nhìn xa.<br>• Supporting idea 1: Một trong số đó là sự phát triển của <span class='highlight-en'>the growth of green technology and innovation</span>, khi các doanh nghiệp ngày càng đầu tư vào việc phát triển các <span class='highlight-en'>sustainable solutions</span> như tấm pin mặt trời và xe điện.<br>• Impact: Điều này không chỉ tạo ra cơ hội việc làm mới mà còn giúp <span class='highlight-en'>generate substantial profit</span> từ việc bán những sản phẩm <span class='highlight-en'>eco-friendly products</span> này cho những <span class='highlight-en'>environmentally conscious consumers</span>.<br>• Supporting idea 2: Một cơ hội khác nằm ở thị trường trao đổi carbon mới nổi, nơi các chính phủ thiết lập hệ thống tín dụng carbon.<br>• Impact: Bằng cách bán tín dụng thừa, tổ chức biến nỗ lực bảo vệ môi trường thành một dự án sinh lời." },
+                    { title: "4. Viết BODY 2: Tác động tiêu cực đáng kể hơn", desc: "Topic sentence: Tuy nhiên, tôi tin rằng những <span class='highlight-en'>detrimental effects</span> của biến đổi khí hậu đối với doanh nghiệp vượt xa những lợi ích tiềm năng này.<br>• Supporting idea 1: Vấn đề rõ ràng nhất là cách các <span class='highlight-en'>extreme weather events</span> liên tục làm gián đoạn hoạt động bình thường.<br>• Example: Ví dụ, lũ lụt buộc nhà máy đóng cửa, dẫn đến <span class='highlight-en'>production delays</span> và <span class='highlight-en'>significant revenue losses</span> đe dọa sự tồn tại của công ty.<br>• Supporting idea 2: Từ góc độ nông nghiệp, thiệt hại nghiêm trọng do hạn hán và <span class='highlight-en'>unpredictable rainfall patterns</span> phá hủy mùa màng quy mô lớn.<br>• Impact: Nông dân mất thu nhập và <span class='highlight-en'>drive food prices to increase dramatically</span>, gây bất ổn toàn chuỗi cung ứng." },
+                    { title: "5. Viết Conclusion", desc: "Tóm tắt các điểm cốt lõi và khẳng định lại quan điểm.<br>• Gợi ý Paraphrasing: <span class='highlight-en'>green technology and carbon trading</span> (công nghệ xanh và giao dịch carbon), <span class='highlight-en'>extreme weather disruption and agricultural damage</span> (sự gián đoạn của thời tiết và thiệt hại nông nghiệp)." }
+                ],
+                essay: [
+                    { en: "Introduction: It is widely observed that climate change has emerged as a global phenomenon, triggering significant debates regarding its economic ramifications. While some individuals argue that environmental shifts harm businesses, others believe that they can unlock unprecedented commercial activities. In my opinion, although climate change drives innovation in specific sectors, its overall detrimental impacts on global commerce are far more profound.", vi: "Mở bài: Người ta quan sát rộng rãi rằng biến đổi khí hậu đã nổi lên như một hiện tượng toàn cầu, gây ra những tranh luận lớn về các hệ lụy kinh tế. Trong khi một số cá nhân cho rằng các thay đổi môi trường gây hại cho doanh nghiệp, những người khác tin rằng chúng có thể mở khóa các hoạt động thương mại chưa từng có. Theo quan điểm của tôi, mặc dù biến đổi khí hậu thúc đẩy đổi mới trong các lĩnh vực cụ thể, các tác động bất lợi tổng thể của nó đối với thương mại toàn cầu sâu sắc hơn nhiều." },
+                    { en: "Body 1: On the one hand, climate challenges can undoubtedly generate substantial profit for visionary firms. The primary driver of this trend is the growth of green technology and innovation. As modern corporations invest heavily in implementing sustainable solutions, such as manufacturing high-capacity solar panels and electric vehicles, they cater perfectly to environmentally conscious consumers. Furthermore, the emerging global carbon trading market enables enterprises with low emission levels to sell excess carbon credits. This legal mechanism effectively transforms ecological compliance into highly lucrative ventures for many organizations.", vi: "Thân bài 1: Một mặt, các thách thức khí hậu chắc chắn có thể tạo ra lợi nhuận đáng kể cho các công ty có tầm nhìn xa. Động lực chính của xu hướng này là sự phát triển của công nghệ xanh và đổi mới. Khi các tập đoàn hiện đại đầu tư mạnh mẽ vào việc triển khai các giải pháp bền vững, chẳng hạn như sản xuất các tấm pin mặt trời công suất cao và xe điện, họ phục vụ hoàn hảo cho những người tiêu dùng có ý thức bảo vệ môi trường. Hơn nữa, thị trường giao dịch carbon toàn cầu mới nổi cho phép các doanh nghiệp có mức phát thải thấp bán tín dụng carbon dư thừa. Cơ chế pháp lý này biến việc tuân thủ sinh thái thành các dự án kinh doanh có lợi nhuận cao cho nhiều tổ chức." },
+                    { en: "Body 2: On the other hand, I side with those who maintain that the detrimental effects of global warming far outweigh any modern economic advantages. The most pressing danger stems from extreme weather events that cause severe production delays and catastrophic capital destruction. For instance, frequent floods and intense hurricanes routinely force coastal manufacturing facilities to shut down, leading to sudden revenue losses. Additionally, in the agricultural sector, unpredictable rainfall patterns and prolonged droughts destroy cash crops at scale. This failure directly drives food prices to increase dramatically, distorting supply chains and undermining global economic stability.", vi: "Thân bài 2: Mặt khác, tôi đứng về phía những người cho rằng tác động bất lợi của sự nóng lên toàn cầu vượt xa bất kỳ lợi thế kinh tế hiện đại nào. Mối đe dọa cấp bách nhất bắt nguồn từ các hiện tượng thời tiết cực đoan gây ra sự chậm trễ sản xuất nghiêm trọng và hủy hoại vốn thảm khốc. Ví dụ, lũ lụt thường xuyên và bão dữ dội thường xuyên buộc các cơ sở sản xuất ven biển phải đóng cửa, dẫn đến tổn thất doanh thu đột ngột. Thêm vào đó, trong ngành nông nghiệp, các mô hình lượng mưa không thể đoán trước và hạn hán kéo dài phá hủy các cây trồng công nghiệp trên diện rộng. Sự thất bại này trực tiếp đẩy giá lương thực tăng mạnh, làm biến dạng chuỗi cung ứng và làm suy yếu sự ổn định kinh tế toàn cầu." },
+                    { en: "Conclusion: In conclusion, while climate transformation fosters green technology and carbon trading markets, its systemic dangers cannot be overlooked. The widespread extreme weather disruption and extensive agricultural damage demonstrate that climate change remains an existential threat to business durability worldwide.", vi: "Kết luận: Tóm lại, trong khi sự biến đổi khí hậu thúc đẩy công nghệ xanh và thị trường giao dịch carbon, các mối nguy hiểm mang tính hệ thống của nó không thể bị bỏ qua. Sự gián đoạn thời tiết cực đoan trên diện rộng và thiệt hại nông nghiệp sâu sắc chứng minh rằng biến đổi khí hậu vẫn là một mối đe dọa sống còn đối với sự bền vững của doanh nghiệp trên toàn thế giới." }
+                ],
+                vocab: [
+                    { word: "Phenomenon", type: "noun", detail: "Hiện tượng toàn cầu, sự việc kỳ lạ. Synonyms: Occurrence, trend." },
+                    { word: "Ramifications", type: "noun", detail: "Hệ lụy, kết quả phức tạp đi kèm. Synonyms: Consequences, implications." },
+                    { word: "Detrimental", type: "adj", detail: "Gây hại, có hại lớn cho cái gì. Synonyms: Harmful, damaging." },
+                    { word: "Profound", type: "adj", detail: "Sâu sắc, cực kỳ lớn lao. Synonyms: Deep, immense." },
+                    { word: "Substantial profit", type: "phrase", detail: "Lợi nhuận kếch xù, đáng kể. Context: Business earnings." },
+                    { word: "Visionary", type: "adj", detail: "Có tầm nhìn xa trông rộng. Synonyms: Far-sighted, innovative." },
+                    { word: "Sustainable solutions", type: "phrase", detail: "Các giải pháp mang tính bền vững lâu dài." },
+                    { word: "Environmentally conscious", type: "phrase", detail: "Có ý thức cao về bảo vệ môi trường." },
+                    { word: "Carbon trading", type: "noun", detail: "Hệ thống mua bán/trao đổi hạn ngạch khí thải carbon." },
+                    { word: "Lucrative ventures", type: "phrase", detail: "Các dự án đầu tư sinh lời rất cao. Synonyms: Profitable projects." },
+                    { word: "Outweigh", type: "verb", detail: "Nặng ký hơn, có nhiều tầm ảnh hưởng hơn." },
+                    { word: "Extreme weather events", type: "phrase", detail: "Các hiện tượng thời tiết cực đoan (bão, lũ, hạn hán)." },
+                    { word: "Production delays", type: "phrase", detail: "Sự chậm trễ trong tiến độ sản xuất dây chuyền." },
+                    { word: "Catastrophic", type: "adj", detail: "Thảm khốc, gây thiệt hại nặng nề. Synonyms: Disastrous." },
+                    { word: "Unpredictable", type: "adj", detail: "Không thể đoán trước được. Synonyms: Erratic, volatile." },
+                    { word: "Rainfall patterns", type: "phrase", detail: "Quy luật hay mô hình phân bổ lượng mưa tự nhiên." },
+                    { word: "Distorting", type: "verb", detail: "Làm bóp méo, làm biến dạng (chuỗi cung ứng)." },
+                    { word: "Existential threat", type: "phrase", detail: "Hiểm họa sống còn, đe dọa sự tồn vong." },
+                    { word: "Durability", type: "noun", detail: "Sự bền vững, bền bỉ theo thời gian. Synonyms: Resilience." },
+                    { word: "Systemic", type: "adj", detail: "Mang tính hệ thống, ảnh hưởng toàn bộ cấu trúc." }
+                ],
+                quiz: [
+                    { q: "Từ nào trong bài đồng nghĩa với cụm từ 'harmful'?", a: "Detrimental", b: "Lucrative", c: "Visionary", d: "Profound", correct: "A", exp: "Detrimental mang nghĩa là gây hại, tổn hại, đồng nghĩa hoàn hảo với harmful." },
+                    { q: "Theo bài viết, các doanh nghiệp xanh thu lợi nhuận từ đối tượng khách hàng nào?", a: "Environmentally conscious consumers", b: "Ordinary employees", c: "Coastal manufacturers", d: "Juvenile delinquents", correct: "A", exp: "Bài viết nêu rõ họ bán sản phẩm thân thiện cho 'environmentally conscious consumers' (người tiêu dùng có ý thức môi trường)." },
+                    { q: "Cụm từ 'Lucrative ventures' được hiểu là gì?", a: "Dự án sinh lời lớn", b: "Thảm họa kinh tế", c: "Nỗ lực bảo vệ môi trường", d: "Sự trì trệ sản xuất", correct: "A", exp: "Lucrative có nghĩa là rất nhiều lợi nhuận, venture là dự án kinh doanh mạo hiểm/mới." },
+                    { q: "Vấn đề nào được nhắc đến trực tiếp gây ảnh hưởng tới ngành nông nghiệp ở Body 2?", a: "Unpredictable rainfall patterns", b: "Carbon credits", c: "High-capacity solar panels", d: "High executive salaries", correct: "A", exp: "Đoạn văn Body 2 nhấn mạnh 'unpredictable rainfall patterns' (mô hình mưa không đoán trước) và hạn hán phá hủy mùa màng." },
+                    { q: "Từ 'Outweigh' trong ngữ cảnh bài luận mang nghĩa là gì?", a: "Vượt trội/Nhiều ảnh hưởng hơn", b: "Bằng cân nặng", c: "Thấp kém hơn", d: "Biến mất hoàn toàn", correct: "A", exp: "Outweigh có nghĩa là lợi ích hoặc tác hại lớn hơn mặt còn lại." },
+                    { q: "Đâu LÀ một cơ hội kinh tế được nhắc đến trong Body 1?", a: "Carbon trading market", b: "Extreme weather destruction", c: "Production delays", d: "Agricultural failure", correct: "A", exp: "Thị trường trao đổi carbon (carbon trading) được nêu là cơ hội kinh tế sinh lời ở Body 1." },
+                    { q: "Chủ đề chính được chọn cho bài viết này thuộc lĩnh vực gì?", a: "Environment & Business", b: "Education", c: "Crime", d: "Corporate Finance", correct: "A", exp: "Đề bài thảo luận mối quan hệ giữa biến đổi khí hậu (Climate Change) và hoạt động kinh doanh (Business)." },
+                    { q: "Tác giả đánh giá như thế nào về tác động tổng thể của biến đổi khí hậu trong bài viết?", a: "Detrimental effects outweigh advantages", b: "Opportunities are more significant", c: "It has no impact at all", d: "It is strictly beneficial", correct: "A", exp: "Tại câu Thesis và phần Kết luận, tác giả khẳng định tác động tiêu cực vượt xa các cơ hội." },
+                    { q: "Điền vào chỗ trống: '... weather events routinely force coastal manufacturing facilities to shut down.'", a: "Extreme", b: "Mild", c: "Predictable", d: "Lucrative", correct: "A", exp: "Extreme weather events là cụm từ cố định chỉ thời tiết cực đoan gây gián đoạn sản xuất." },
+                    { q: "Từ 'Phenomenon' số nhiều ở dạng tiếng Anh chuẩn là gì?", a: "Phenomena", b: "Phenomenons", c: "Phenomenal", d: "Phenomenis", correct: "A", exp: "Hiện tượng (Phenomenon) có dạng số nhiều bất quy tắc học thuật là Phenomena." },
+                    { q: "Ý nào chứng minh cho luận điểm 'sản xuất bị đình trệ' ở Body 2?", a: "Production delays and revenue losses due to floods", b: "Selling excess carbon credits", c: "Developing high-capacity electric vehicles", d: "Increasing salaries for workers", correct: "A", exp: "Lũ lụt buộc cơ sở sản xuất đóng cửa dẫn đến chậm trễ tiến độ (production delays)." },
+                    { q: "Từ nào đồng nghĩa với 'Consequences' xuất hiện ở phần từ vựng trích xuất?", a: "Ramifications", b: "Durability", c: "Systemic", d: "Visionary", correct: "A", exp: "Ramifications mang nghĩa hệ lụy, hậu quả sâu xa của một vấn đề." },
+                    { q: "Tính từ nào chỉ một công ty có tầm nhìn tương lai xa rộng?", a: "Visionary", b: "Systemic", c: "Detrimental", d: "Unpredictable", correct: "A", exp: "Visionary có nghĩa là mang tính viễn cảnh, nhìn xa trông rộng." },
+                    { q: "Cụm từ 'sustainable solutions' có ý nghĩa là gì?", a: "Giải pháp bền vững", b: "Vấn đề tạm thời", c: "Kế hoạch ngắn hạn", d: "Thiệt hại kinh tế", correct: "A", exp: "Sustainable nghĩa là bền vững, lâu dài, thân thiện với sự phát triển tương lai." },
+                    { q: "Hệ thống 'carbon trading' cho phép các doanh nghiệp làm gì?", a: "Sell excess carbon credits", b: "Increase worker hours", c: "Shut down coal plants", d: "Avoid paying corporate taxes", correct: "A", exp: "Hệ thống cho phép các công ty phát thải ít bán lại hạn ngạch dư (excess credits) thu lời." },
+                    { q: "Từ nào mô tả một mối đe dọa ảnh hưởng đến chính sự sống còn của đối tượng?", a: "Existential", b: "Lucrative", c: "Profound", d: "Mild", correct: "A", exp: "Existential threat có nghĩa là mối đe dọa mang tính sinh tồn/sống còn." },
+                    { q: "Từ 'Durability' có từ đồng nghĩa nào dưới đây?", a: "Resilience", b: "Weakness", c: "Failure", d: "Interruption", correct: "A", exp: "Durability là độ bền, khả năng chống chịu bền bỉ, đồng nghĩa với Resilience." },
+                    { q: "Tại sao giá lương thực lại tăng mạnh ('drive food prices to increase dramatically')?", a: "Due to agricultural damage from droughts", b: "Because of corporate greed", c: "Due to successful green technology", d: "Because governments subsidize farming", correct: "A", exp: "Do hạn hán hủy hoại mùa màng khiến sản lượng giảm sâu, đẩy giá tăng vọt." },
+                    { q: "Từ 'Systemic' trong bài bổ nghĩa cho danh từ nào ở kết bài?", a: "dangers", b: "solutions", c: "profits", d: "consumers", correct: "A", exp: "Kết luận dùng cụm 'systemic dangers' ý chỉ những mối nguy hiểm mang tính hệ thống toàn cục." },
+                    { q: "Cấu trúc lập luận được Ms Lê Hằng English đề xuất trong outline có tỷ lệ là bao nhiêu?", a: "40/60", b: "50/50", c: "30/70", d: "20/80", correct: "A", exp: "Mô hình được định rõ là Logical Framework© với tỷ lệ lập luận 40/60." }
+                ]
+            },
+            {
+                title: "Extracurriculars vs Academics",
+                slogan: "Holistic Development vs Pure Academic Core",
+                theme: { primary: "#4cc9f0", secondary: "#4895ef", emoji1: "⚽", emoji2: "📚" },
+                question: "Some people believe schools should provide more extracurricular activities to support students’ overall development, while others think schools should concentrate mainly on academic learning. Discuss both views and give your opinion.",
+                outline: [
+                    { title: "1. Hiểu đề & viết Introduction", desc: "Giới thiệu xung đột giáo dục giữa phát triển toàn diện thể chất/kỹ năng và tích lũy kiến thức hàn lâm. Thể hiện rõ xu hướng nghiêng về cân bằng toàn diện.<br>• Gợi ý Paraphrasing: <span class='highlight-en'>holistic development</span> (phát triển toàn diện), <span class='highlight-en'>academic proficiency</span> (thành thạo học thuật), <span class='highlight-en'>non-academic pursuits</span> (các hoạt động ngoài học thuật)." },
+                    { title: "2. Gợi ý lập luận & phân BODY (40/60)", desc: "Body 1 (40%): Lợi ích của việc tập trung học thuật để thi cử, đỗ đại học danh tiếng. Body 2 (60%): Tầm quan trọng cốt tử của các kỹ năng mềm có được từ hoạt động ngoại khóa nhằm sinh tồn thực tế." },
+                    { title: "3. Viết BODY 1: Vai trò trọng tâm của Học thuật", desc: "Topic sentence: Việc ưu tiên thành tích học thuật thuần túy giúp học sinh đạt được các mục tiêu nghề nghiệp ngắn hạn dễ dàng.<br>• Supporting idea 1: Hệ thống đánh giá hiện tại dựa vào điểm số (<span class='highlight-en'>standardized testing scores</span>). Học sinh tập trung cao độ sẽ tối ưu điểm số học tập (<span class='highlight-en'>academic excellence</span>).<br>• Supporting idea 2: Kiến thức nền tảng vững vàng trong các môn cốt lõi như Toán, Khoa học là điều kiện tiên quyết để trúng tuyển các trường đại học hàng đầu." },
+                    { title: "4. Viết BODY 2: Sự cần thiết của Hoạt động ngoại khóa", desc: "Topic sentence: Tuy nhiên, việc tham gia vào các <span class='highlight-en'>extracurricular endeavors</span> đóng vai trò thiết yếu trong việc hình thành những cá nhân toàn diện.<br>• Supporting idea 1: Hoạt động thể thao và câu lạc bộ rèn luyện <span class='highlight-en'>interpersonal skills</span> xuất sắc, khả năng làm việc nhóm và năng lực lãnh đạo.<br>• Supporting idea 2: Giúp giải tỏa áp lực tinh thần nặng nề (<span class='highlight-en'>alleviate psychological distress</span>), ngăn ngừa hội chứng kiệt sức học tập (<span class='highlight-en'>academic burnout</span>)." },
+                    { title: "5. Viết Conclusion", desc: "Khẳng định trường học hiện đại không nên chỉ là nhà máy sản xuất điểm số mà phải tích hợp cả hai để học sinh phát triển tối đa tiềm năng." }
+                ],
+                essay: [
+                    { en: "Introduction: Educational philosophies frequently clash over whether schools should prioritize comprehensive non-academic pursuits or dedicate resources solely to academic proficiency. While an exclusive focus on core subjects guarantees high test results, I strongly believe that incorporating extensive extracurricular activities is indispensable for a student's holistic development.", vi: "Mở bài: Các triết lý giáo dục thường xuyên xung đột về việc liệu các trường học nên ưu tiên các hoạt động ngoài học thuật toàn diện hay chỉ dành nguồn lực cho sự thành thạo học thuật. Mặc dù sự tập trung độc quyền vào các môn học cốt lõi đảm bảo kết quả kiểm tra cao, tôi mạnh mẽ tin rằng việc kết hợp các hoạt động ngoại khóa sâu rộng là không thể thiếu cho sự phát triển toàn diện của học sinh." },
+                    { en: "Body 1: On the one hand, concentrating on academic core curriculum serves a pivotal role in secure career paving. In contemporary society, university admissions and employment screenings heavily depend on standardized testing scores. Students who devote their maximum energy to academic excellence naturally secure placements in prestigious institutions. Moreover, acquiring a profound foundation in mathematics, literacy, and sciences provides critical analytical skills that are highly valued in technological and professional markets.", vi: "Thân bài 1: Một mặt, việc tập trung vào chương trình học thuật cốt lõi đóng một vai trò then chốt trong việc lát đường sự nghiệp an toàn. Trong xã hội đương đại, việc tuyển sinh đại học và sàng lọc việc làm phụ thuộc nặng nề vào điểm số của các kỳ thi chuẩn hóa. Những học sinh cống hiến năng lượng tối đa của mình cho sự xuất sắc trong học thuật đương nhiên sẽ giành được vị trí trong các học viện danh giá. Hơn nữa, việc có được nền tảng sâu sắc về toán học, văn học và khoa học cung cấp các kỹ năng phân tích quan trọng được đánh giá cao trong thị trường công nghệ và chuyên nghiệp." },
+                    { en: "Body 2: On the other hand, limiting schooling to textbook learning breeds serious long-term deficiencies. Extracurricular endeavors are the ideal vehicles for fostering essential interpersonal skills and leadership qualities. For example, participating in team sports teaches teenagers real-world cooperation, conflict resolution, and resilience under pressure. Furthermore, engaging in arts or community clubs helps students alleviate psychological distress, effectively preventing academic burnout caused by rigid examination schedules.", vi: "Thân bài 2: Mặt khác, việc giới hạn việc học ở trường trong việc học sách vở sẽ tạo ra những thiếu hụt nghiêm trọng trong dài hạn. Các nỗ lực ngoại khóa là phương tiện lý tưởng để nuôi dưỡng các kỹ năng liên cá nhân thiết yếu và phẩm chất lãnh đạo. Ví dụ, tham gia vào các môn thể thao đồng đội dạy cho thanh thiếu niên sự hợp tác trong thế giới thực, giải quyết xung đột và khả năng phục hồi dưới áp lực. Hơn nữa, tham gia vào các câu lạc bộ nghệ thuật hoặc cộng đồng giúp học sinh giải tỏa căng thẳng tâm lý, ngăn ngừa hiệu quả hội chứng kiệt sức học tập do lịch trình thi cử cứng nhắc gây ra." },
+                    { en: "Conclusion: In conclusion, while high academic standards are vital for professional recruitment, extracurricular integration must not be marginalized. A balanced school system that stimulates both intellectual minds and social character produces capable citizens ready for modern societal challenges.", vi: "Kết luận: Tóm lại, trong khi các tiêu chuẩn học thuật cao là quan trọng đối với việc tuyển dụng chuyên nghiệp, việc tích hợp ngoại khóa không được phép bị gạt ra lề. Một hệ thống trường học cân bằng kích thích cả trí tuệ lẫn tính cách xã hội sẽ tạo ra những công dân có năng lực sẵn sàng cho các thách thức xã hội hiện đại." }
+                ],
+                vocab: [
+                    { word: "Philosophies", type: "noun", detail: "Các triết lý sống hoặc hệ tư tưởng giáo dục." },
+                    { word: "Indispensable", type: "adj", detail: "Rất quan trọng, không thể thiếu được. Synonyms: Essential, vital." },
+                    { word: "Holistic development", type: "phrase", detail: "Sự phát triển toàn diện cả thể chất lẫn tâm hồn." },
+                    { word: "Pivotal role", type: "phrase", detail: "Vai trò nòng cốt, then chốt quan trọng bậc nhất." },
+                    { word: "Standardized testing", type: "phrase", detail: "Hệ thống thi cử được chuẩn hóa chung." },
+                    { word: "Academic excellence", type: "phrase", detail: "Sự xuất sắc vượt trội trong học tập thi cử." },
+                    { word: "Prestigious", type: "adj", detail: "Danh giá, có uy tín cao. Synonyms: Reputable, elite." },
+                    { word: "Deficiencies", type: "noun", detail: "Sự thiếu hụt, điểm khiếm khuyết. Synonyms: Shortcomings." },
+                    { word: "Endeavors", type: "noun", detail: "Sự nỗ lực, các hoạt động trải nghiệm." },
+                    { word: "Fostering", type: "verb", detail: "Nuôi dưỡng, thúc đẩy sự phát triển của kỹ năng." },
+                    { word: "Interpersonal skills", type: "phrase", detail: "Kỹ năng giao tiếp ứng xử giữa người với người." },
+                    { word: "Conflict resolution", type: "phrase", detail: "Khả năng xử lý và giải quyết mâu thuẫn." },
+                    { word: "Resilience", type: "noun", detail: "Khả năng phục hồi, kiên cường vượt qua khó khăn." },
+                    { word: "Alleviate", type: "verb", detail: "Làm giảm nhẹ, giảm bớt đau đớn gánh nặng. Synonyms: Reduce." },
+                    { word: "Psychological distress", type: "phrase", detail: "Sự kiệt quệ, căng thẳng nặng nề về tâm lý." },
+                    { word: "Academic burnout", type: "phrase", detail: "Hội chứng kiệt sức học tập do áp lực thi cử kéo dài." },
+                    { word: "Rigid", type: "adj", detail: "Cứng nhắc, rập khuôn, thiếu linh hoạt. Synonyms: Inflexible." },
+                    { word: "Marginalized", type: "verb", detail: "Bị gạt ra bên lề, bị xem nhẹ không coi trọng." },
+                    { word: "Integration", type: "noun", detail: "Sự tích hợp, hòa nhập các yếu tố lại với nhau." },
+                    { word: "Intellectual", type: "adj", detail: "Thuộc về trí tuệ, đầu óc suy nghĩ học thuật." }
+                ],
+                quiz: [
+                    { q: "Từ nào đồng nghĩa với 'Essential' được dùng ở Introduction?", a: "Indispensable", b: "Rigid", c: "Prestigious", d: "Intellectual", correct: "A", exp: "Indispensable nghĩa là không thể thiếu, hoàn toàn đồng nghĩa với Essential." },
+                    { q: "Hậu quả của việc học quá lệch theo sách vở được nhắc đến là gì?", a: "Academic burnout", b: "High-capacity profit", c: "Carbon credits", d: "Juvenile crimes", correct: "A", exp: "Học tập quá áp lực, cứng nhắc dẫn đến 'academic burnout' (kiệt sức học tập)." },
+                    { q: "Cụm từ 'Interpersonal skills' ám chỉ điều gì?", a: "Kỹ năng giao tiếp và tương tác xã hội", b: "Kỹ năng làm toán nâng cao", c: "Kỹ năng quản lý tài chính doanh nghiệp", d: "Kỹ năng viết luận văn học thuật", correct: "A", exp: "Interpersonal skills là kỹ năng tương tác giữa người với người." },
+                    { q: "Theo Body 1, các tiêu chí tuyển sinh đại học hiện đại dựa nhiều vào cái gì?", a: "Standardized testing scores", b: "Art exhibitions", c: "Sports medals", d: "Parental incomes", correct: "A", exp: "Tuyển sinh đại học hiện nay phụ thuộc lớn vào 'standardized testing scores' (điểm thi chuẩn hóa)." },
+                    { q: "Từ 'Prestigious' dùng để bổ nghĩa cho danh từ nào trong bài?", a: "institutions", b: "schedules", c: "skills", d: "distress", correct: "A", exp: "Prestigious institutions mang nghĩa là những học viện/trường đại học danh giá." },
+                    { q: "Từ nào trái nghĩa hoàn toàn với động từ 'Alleviate' (làm giảm bớt)?", a: "Aggravate (làm trầm trọng hơn)", b: "Reduce", c: "Soothe", d: "Diminish", correct: "A", exp: "Alleviate là làm dịu/giảm, trái nghĩa hoàn toàn với Aggravate (làm nặng nề thêm)." },
+                    { q: "Ngoại khóa giúp phát triển phẩm chất nào khi tham gia thể thao đồng đội?", a: "Conflict resolution and cooperation", b: "Pure calculus formulas", c: "Carbon emissions reduction", d: "Punishment avoiding", correct: "A", exp: "Thể thao đồng đội rèn luyện sự hợp tác và giải quyết xung đột (conflict resolution)." },
+                    { q: "Từ 'Deficiencies' có nghĩa là gì?", a: "Những điểm khiếm khuyết/thiếu sót", b: "Thành tựu xuất sắc", c: "Sự giàu có tài chính", d: "Phương pháp giảng dạy", correct: "A", exp: "Deficiencies có nghĩa là sự thiếu hụt, điểm yếu kém." },
+                    { q: "Tính từ 'Rigid' dùng để miêu tả điều gì trong bài luận?", a: "Examination schedules", b: "Green technology", c: "Soft skills", d: "Human character", correct: "A", exp: "Rigid examination schedules tức là lịch trình thi cử áp lực và cứng nhắc." },
+                    { q: "Điền vào chỗ trống: 'Extracurricular integration must not be ...'", a: "marginalized", b: "fostered", c: "pivotal", d: "holistic", correct: "A", exp: "Marginalized nghĩa là bị xem nhẹ, bị đẩy ra rìa, không được trân trọng đúng mức." },
+                    { q: "Từ 'Fostering' có nghĩa tương đương với từ nào?", a: "Nurturing", b: "Destroying", c: "Ignoring", d: "Postponing", correct: "A", exp: "Fostering đồng nghĩa với Nurturing (nuôi dưỡng, thúc đẩy phát triển)." },
+                    { q: "Môn học nào KHÔNG được liệt kê là môn học thuật cốt lõi ở Body 1?", a: "Graphic Design", b: "Mathematics", c: "Sciences", d: "Literacy", correct: "A", exp: "Toán, Văn, Khoa học được nhắc tới làm nền tảng, còn Thiết kế đồ họa không có." },
+                    { q: "Cụm từ 'holistic development' nhắm tới sự phát triển như thế nào?", a: "Toàn diện mọi mặt", b: "Chỉ tập trung trí tuệ", c: "Chỉ tập trung thể chất", d: "Chỉ phục vụ mục đích kiếm tiền", correct: "A", exp: "Holistic nghĩa là toàn vẹn, tổng thể, toàn diện." },
+                    { q: "Từ 'Endeavors' đóng vai trò từ loại gì trong cụm 'Extracurricular endeavors'?", a: "Noun", b: "Verb", c: "Adjective", d: "Adverb", correct: "A", exp: "Trong ngữ cảnh này, endeavors là danh từ số nhiều (các nỗ lực, hoạt động trải nghiệm)." },
+                    { q: "Quan điểm của tác giả về vai trò của hoạt động ngoại khóa là gì?", a: "It is indispensable", b: "It is a waste of time", c: "It is less important than business", d: "It should be banned", correct: "A", exp: "Tác giả khẳng định ngoại khóa là 'indispensable' (không thể thiếu)." },
+                    { q: "Từ 'Resilience' mang nghĩa là gì?", a: "Sự kiên cường, khả năng phục hồi nhanh", b: "Sự lười biếng", c: "Sự nhút nhát", d: "Sự giận dữ", correct: "A", exp: "Resilience là khả năng đứng dậy, kiên cường sau nghịch cảnh." },
+                    { q: "Chủ đề bài viết này thuộc phạm vi vĩ mô nào?", a: "Education System", b: "Macroeconomics", c: "Criminal Justice", d: "Environmental Law", correct: "A", exp: "Bài học xoay quanh triết lý và hệ thống giáo dục học đường." },
+                    { q: "Từ 'Intellectual' có liên quan mật thiết nhất đến cơ quan nào?", a: "Brain", b: "Heart", c: "Muscle", d: "Lungs", correct: "A", exp: "Intellectual thuộc về trí tuệ, tư duy, gắn liền với bộ não (Brain)." },
+                    { q: "Học sinh tham gia câu lạc bộ nghệ thuật nhằm mục đích gì?", a: "Alleviate psychological distress", b: "Earn carbon credits", c: "Increase corporate profits", d: "Arrest young criminals", correct: "A", exp: "Họ tham gia nhằm giảm thiểu căng thẳng và gánh nặng tâm lý." },
+                    { q: "Hệ thống trường học lý tưởng theo kết bài cần làm gì?", a: "Stimulate both intellectual minds and social character", b: "Focus 100% on textbooks", c: "Abolish all exam schedules", d: "Charge higher admission fees", correct: "A", exp: "Kết bài đề xuất kích thích đồng thời cả tư duy trí tuệ lẫn tính cách xã hội." }
+                ]
+            },
+            {
+                title: "Transport Pollution Fault",
+                slogan: "State Environmental Regulations vs Individual Duties",
+                theme: { primary: "#f72585", secondary: "#b5179e", emoji1: "🚗", emoji2: "🏛️" },
+                question: "Research has shown that the transportation of products and people are the main source of pollution worldwide. Some people believe the government should be in charge of this, while others believe it is the fault of individuals. Discuss both views and give your opinion.",
+                outline: [
+                    { title: "1. Hiểu đề & viết Introduction", desc: "Nêu thực trạng giao thông vận tải là tác nhân hàng đầu gây ô nhiễm toàn cầu. Đặt vấn đề trách nhiệm thuộc về quản lý vĩ mô của nhà nước hay ý thức vi mô cá nhân.<br>• Gợi ý Paraphrasing: <span class='highlight-en'>vehicular emissions</span> (khí thải phương tiện), <span class='highlight-en'>regulatory bodies</span> (các cơ quan quản lý), <span class='highlight-en'>carbon footprint</span> (dấu chân carbon)." },
+                    { title: "2. Gợi ý lập luận & phân BODY (50/50 hoặc 40/60)", desc: "Body 1 (40%): Giải trình tại sao chính phủ có quyền lực tối cao thay đổi hạ tầng thông qua luật pháp. Body 2 (60%): Nhấn mạnh hành vi tiêu dùng và thói quen di chuyển hàng ngày của hàng triệu cá nhân mới là gốc rễ." },
+                    { title: "3. Viết BODY 1: Vai trò và Trách nhiệm của Chính phủ", desc: "Topic sentence: Các cơ quan quản lý nhà nước sở hữu năng lực tài chính và pháp lý để thực thi các giải pháp môi trường quy mô lớn.<br>• Supporting idea 1: Chỉ chính phủ mới có thể ban hành các quy định nghiêm khắc (<span class='highlight-en'>stringent environmental laws</span>), áp thuế nặng lên khí thải carbon.<br>• Supporting idea 2: Đầu tư nâng cấp <span class='highlight-en'>public transit infrastructure</span> (hệ thống tàu điện ngầm, xe buýt điện) giúp người dân từ bỏ xe cá nhân." },
+                    { title: "4. Viết BODY 2: Trách nhiệm và Nghĩa vụ của Cá nhân", desc: "Topic sentence: Tuy nhiên, các chính sách vĩ mô sẽ thất bại nếu không có sự thay đổi tự giác trong thói quen sinh hoạt của từng cá nhân.<br>• Supporting idea 1: Việc lựa chọn phương tiện di chuyển xanh (<span class='highlight-en'>eco-friendly commuter alternatives</span>) như đi bộ, xe đạp hoàn toàn phụ thuộc vào ý thức tự giác.<br>• Supporting idea 2: Thói quen tiêu dùng tiêu thụ hàng hóa nhập khẩu từ xa làm gia tăng <span class='highlight-en'>global supply chain pollution</span>; chọn mua nông sản địa phương giúp cắt giảm khí thải." },
+                    { title: "5. Viết Conclusion", desc: "Kết luận rằng đây là cuộc chiến song phương. Chính phủ mở đường bằng chính sách, cá nhân hiện thực hóa bằng hành động thực tế." }
+                ],
+                essay: [
+                    { en: "Introduction: Global statistical analyses consistently identify vehicular emissions as the prominent catalyst for environmental degradation worldwide. While a faction of society asserts that regulatory bodies should hold exclusive accountability, others maintain that reducing the carbon footprint rests entirely upon individual choices. In my view, combating transportation pollution demands a collaborative framework where state legislation complements personal responsibility.", vi: "Mở bài: Các phân tích thống kê toàn cầu liên tục xác định khí thải phương tiện là chất xúc tác nổi bật cho sự suy thoái môi trường trên toàn thế giới. Trong khi một bộ phận xã hội khẳng định rằng các cơ quan quản lý nên chịu trách nhiệm độc quyền, những người khác duy trì rằng việc giảm dấu chân carbon phụ thuộc hoàn toàn vào các lựa chọn cá nhân. Theo quan điểm của tôi, việc chống ô nhiễm giao thông đòi hỏi một khuôn khổ hợp tác nơi luật pháp quốc gia bổ sung cho trách nhiệm cá nhân." },
+                    { en: "Body 1: On the one hand, governments possess the authoritative leverage necessary to reconstruct national transit infrastructure. Individual citizens cannot independently build electric railway grids or subsidize alternative energy research. Therefore, authorities must intervene by enforcing stringent environmental laws and penalizing high-emission manufacturing fleets. Furthermore, by heavily investing in affordable, widespread public transit infrastructure, the state creates an environment where citizens can seamlessly transition away from private car reliance.", vi: "Thân bài 1: Một mặt, các chính phủ sở hữu đòn bẩy thẩm quyền cần thiết để tái cấu trúc hạ tầng giao thông quốc gia. Công dân cá nhân không thể độc lập xây dựng các mạng lưới đường sắt điện hoặc trợ giá cho nghiên cứu năng lượng thay thế. Do đó, các cơ quan chức năng phải can thiệp bằng cách thực thi các luật môi trường nghiêm ngặt và xử phạt các đội xe sản xuất có lượng phát thải cao. Hơn nữa, bằng cách đầu tư mạnh mẽ vào hạ tầng giao thông công cộng giá cả phải chăng và rộng khắp, nhà nước tạo ra một môi trường nơi công dân có thể chuyển đổi liền mạch khỏi sự phụ thuộc vào xe hơi riêng." },
+                    { en: "Body 2: On the other hand, legislative frameworks remain fundamentally impotent without grassroots behavioral modifications. The ultimate decision to adopt eco-friendly commuter alternatives, such as carpooling, cycling, or utilizing trains, resides with the consumer. Millions of daily private journeys combined generate the bulk of metropolitan smog. Additionally, individuals directly influence global supply chain pollution through shopping habits; prioritizing locally sourced products over imported commodities drastically curtails the necessity for long-haul cargo transport.", vi: "Thân bài 2: Mặt khác, các khuôn khổ pháp lý về cơ bản vẫn bất lực nếu không có sự thay đổi hành vi ở tầng lớp bình dân. Quyết định cuối cùng trong việc áp dụng các giải pháp thay thế đi lại thân thiện với môi trường, chẳng hạn như đi chung xe, đi xe đạp hoặc sử dụng tàu hỏa, thuộc về người tiêu dùng. Hàng triệu chuyến hành trình riêng lẻ hàng ngày kết hợp lại tạo ra phần lớn khói bụi đô thị. Thêm vào đó, các cá nhân ảnh hưởng trực tiếp đến ô nhiễm chuỗi cung ứng toàn cầu thông qua thói quen mua sắm; việc ưu tiên các sản phẩm có nguồn gốc địa phương hơn các mặt hàng nhập khẩu làm giảm mạnh sự cần thiết của vận tải hàng hóa đường dài." },
+                    { en: "Conclusion: In conclusion, placing the blame entirely on either administrative bodies or separate citizens creates an ineffective dichotomy. Genuine mitigation of transport pollution is only achievable when stringent state enforcement merges with a collective conscious effort by every citizen to minimize their daily ecological impact.", vi: "Kết luận: Tóm lại, việc đổ lỗi hoàn toàn cho các cơ quan hành chính hoặc các công dân riêng rẽ tạo ra một sự phân đôi vô hiệu. Sự giảm nhẹ đích thực đối với ô nhiễm giao thông chỉ có thể đạt được khi việc thực thi nghiêm ngặt của nhà nước kết hợp với nỗ lực có ý thức tập thể của mỗi công dân nhằm giảm thiểu tác động sinh thái hàng ngày của họ." }
+                ],
+                vocab: [
+                    { word: "Catalyst", type: "noun", detail: "Chất xúc tác thúc đẩy một sự việc xảy ra nhanh hơn." },
+                    { word: "Degradation", type: "noun", detail: "Sự suy thoái, xuống cấp nặng nề (môi trường)." },
+                    { word: "Accountability", type: "noun", detail: "Trách nhiệm giải trình, chịu trách nhiệm pháp lý." },
+                    { word: "Collaborative", type: "adj", detail: "Mang tính hợp tác, phối hợp từ nhiều bên." },
+                    { word: "Legislation", type: "noun", detail: "Hệ thống luật pháp được ban hành. Synonyms: Laws, statutes." },
+                    { word: "Authoritative leverage", type: "phrase", detail: "Đòn bẩy quyền lực tối cao theo pháp luật." },
+                    { word: "Subsidize", type: "verb", detail: "Trợ cấp, tài trợ kinh phí từ ngân sách nhà nước." },
+                    { word: "Stringent", type: "adj", detail: "Nghiêm khắc, chặt chẽ, gắt gao (luật lệ). Synonyms: Strict." },
+                    { word: "Penalizing", type: "verb", detail: "Xử phạt, phạt tiền các hành vi vi phạm." },
+                    { word: "Seamlessly", type: "adv", detail: "Một cách mượt mà, liền mạch không gặp trở ngại." },
+                    { word: "Impotent", type: "adj", detail: "Bất lực, yếu ớt, không có hiệu lực thực tế." },
+                    { word: "Grassroots", type: "noun/adj", detail: "Tầng lớp bình dân, gốc rễ từ người dân thường." },
+                    { word: "Commuter alternatives", type: "phrase", detail: "Các giải pháp di chuyển thay thế cho người đi làm." },
+                    { word: "Carpooling", type: "noun", detail: "Hình thức đi chung xe ô tô để tiết kiệm nhiên liệu." },
+                    { word: "Metropolitan smog", type: "phrase", detail: "Khói bụi ô nhiễm đặc quánh tại các đô thị lớn." },
+                    { word: "Locally sourced", type: "phrase", detail: "Có nguồn gốc sản xuất trực tiếp tại địa phương." },
+                    { word: "Curtails", type: "verb", detail: "Cắt giảm, thu hẹp, giới hạn lại. Synonyms: Reduces, cuts." },
+                    { word: "Long-haul cargo", type: "phrase", detail: "Vận chuyển hàng hóa đường dài bằng container/máy bay." },
+                    { word: "Dichotomy", type: "noun", detail: "Sự phân đôi, tách biệt đối lập cực đoan." },
+                    { word: "Mitigation", type: "noun", detail: "Sự giảm nhẹ, giảm bớt mức độ nghiêm trọng." }
+                ],
+                quiz: [
+                    { q: "Từ nào trong bài có nghĩa là 'luật pháp/hệ thống luật'?", a: "Legislation", b: "Smog", c: "Dichotomy", d: "Leverage", correct: "A", exp: "Legislation có nghĩa là luật pháp hoặc việc ban hành luật." },
+                    { q: "Cá nhân có thể giảm thiểu ô nhiễm vận tải đường dài bằng thói quen nào?", a: "Buying locally sourced products", b: "Purchasing imported commodities", c: "Driving private cars alone", d: "Refusing to pay environmental taxes", correct: "A", exp: "Mua sản phẩm nội địa (locally sourced) giúp giảm thiểu nhu cầu vận chuyển container đường dài." },
+                    { q: "Tính từ 'Stringent' thường đi kèm với danh từ nào trong văn cảnh bài viết?", a: "environmental laws", b: "railway grids", c: "shopping habits", d: "private journeys", correct: "A", exp: "Stringent environmental laws có nghĩa là luật môi trường nghiêm khắc." },
+                    { q: "Từ 'Smog' dùng để miêu tả hiện tượng gì tại các đô thị?", a: "Khói bụi ô nhiễm dày đặc", b: "Hệ thống tàu điện ngầm", c: "Nông sản sạch địa phương", d: "Năng lượng mặt trời", correct: "A", exp: "Smog là từ kết hợp giữa smoke (khói) và fog (sương mù), chỉ khói bụi ô nhiễm đô thị." },
+                    { q: "Chính phủ có thể hỗ trợ tài chính cho nghiên cứu năng lượng bằng hành động nào?", a: "Subsidize", b: "Penalize", c: "Curtail", d: "Distort", correct: "A", exp: "Subsidize có nghĩa là trợ cấp, tài trợ tiền từ ngân sách." },
+                    { q: "Động từ 'Curtails' đồng nghĩa với từ nào sau đây?", a: "Reduces", b: "Increases", c: "Expands", d: "Promotes", correct: "A", exp: "Curtail nghĩa là cắt giảm, thu hẹp, đồng nghĩa với Reduce." },
+                    { q: "Hành vi 'Carpooling' mang lại lợi ích gì?", a: "Giảm lượng xe lưu thông bằng cách đi chung xe", b: "Tăng lượng tiêu thụ xăng dầu", c: "Phá hủy hệ thống tàu điện", d: "Trốn thuế của chính phủ", correct: "A", exp: "Carpooling giúp đi chung xe, giảm số lượng phương tiện cá nhân trên đường." },
+                    { q: "Cụm từ 'grassroots behavioral modifications' nhấn mạnh sự thay đổi từ ai?", a: "Người dân bình thường", b: "Các bộ trưởng chính phủ", c: "Giám đốc tập đoàn lớn", d: "Cảnh sát giao thông", correct: "A", exp: "Grassroots nghĩa là gốc rễ, tầng lớp nhân dân thường." },
+                    { q: "Từ nào trái nghĩa với 'Impotent' (bất lực)?", a: "Powerful", b: "Weak", c: "Incapable", d: "Helpless", correct: "A", exp: "Impotent là bất lực, không có sức mạnh, trái nghĩa với Powerful." },
+                    { q: "Cụm từ 'carbon footprint' được dịch là gì?", a: "Dấu chân carbon (lượng khí thải cá nhân tạo ra)", b: "Lốp xe ô tô", c: "Hạ tầng đường sắt", d: "Thuế nhiên liệu", correct: "A", exp: "Carbon footprint là tổng lượng khí nhà kính phát sinh từ hành vi con người." },
+                    { q: "Tại sao việc đổ lỗi cho chỉ một bên được gọi là 'ineffective dichotomy'?", a: "Vì nó phân cực sai lầm và không đem lại hiệu quả thực tế", b: "Vì nó giúp giải quyết ô nhiễm ngay lập tức", c: "Vì nó làm tăng giá thành sản phẩm", d: "Vì nó loại bỏ hoàn toàn khí thải phương tiện", correct: "A", exp: "Dichotomy là sự phân đôi, việc tách biệt cực đoan khiến chính sách thiếu đồng bộ." },
+                    { q: "Danh từ 'Mitigation' mang nghĩa là gì?", a: "Sự giảm nhẹ gánh nặng/thiệt hại", b: "Sự gia tăng mức độ ô nhiễm", c: "Sự xây dựng nhà máy mới", d: "Hành trình đi lại hàng ngày", correct: "A", exp: "Mitigation là sự giảm bớt, làm dịu đi tác động tiêu cực." },
+                    { q: "Đội xe của các nhà máy lớn trong tiếng Anh bài đọc là gì?", a: "Manufacturing fleets", b: "Railway grids", c: "Commuter alternatives", d: "Cargo transports", correct: "A", exp: "Manufacturing fleets dùng để chỉ đoàn xe, đội xe phục vụ sản xuất công nghiệp." },
+                    { q: "Từ 'Seamlessly' bổ nghĩa cho hành động nào ở Body 1?", a: "transition away from private cars", b: "enforce strict laws", c: "penalize corporations", d: "buy foreign goods", correct: "A", exp: "Seamlessly transition tức là chuyển đổi một cách mượt mà, không gặp khó khăn." },
+                    { q: "Từ loại của 'Collaborative' trong cụm 'collaborative framework' là gì?", a: "Adjective", b: "Noun", c: "Verb", d: "Adverb", correct: "A", exp: "Collaborative là tính từ mang nghĩa có tính chất hợp tác, đứng trước danh từ framework." },
+                    { q: "Theo tác giả, giải pháp tối ưu cho vấn đề ô nhiễm giao thông là gì?", a: "State enforcement merges with collective conscious effort", b: "Leaving everything to individuals", c: "Banning all imported cargo shipments", d: "Abolishing public transit funds", correct: "A", exp: "Tác giả kết luận cần kết hợp cả sự thực thi của nhà nước lẫn ý thức cá nhân." },
+                    { q: "Cụm từ 'long-haul cargo' nghĩa là gì?", a: "Hàng hóa vận chuyển đường dài", b: "Xe đạp công cộng", c: "Phương tiện chạy bằng điện", d: "Rác thải đô thị", correct: "A", exp: "Long-haul nghĩa là đường dài, cargo là hàng hóa." },
+                    { q: "Tác nhân nào là 'prominent catalyst' gây ra sự suy thoái môi trường toàn cầu?", a: "Vehicular emissions", b: "Extracurricular activities", c: "Standardized tests", d: "High salaries", correct: "A", exp: "Vehicular emissions (khí thải phương tiện) được xác định là chất xúc tác hàng đầu ở câu đầu tiên." },
+                    { q: "Động từ 'Penalizing' được áp dụng đối với đối tượng nào?", a: "High-emission manufacturing fleets", b: "Eco-friendly commuters", c: "Locally sourced products", d: "Electric railway grids", correct: "A", exp: "Xử phạt (penalizing) được áp dụng cho các đội xe xả nhiều khí thải độc hại." },
+                    { q: "Từ 'Degradation' thuộc gốc động từ nào?", a: "Degrade", b: "Degree", c: "Degradable", d: "Degradedly", correct: "A", exp: "Degradation (sự suy thoái) bắt nguồn từ động từ gốc Degrade (làm suy giảm chất lượng)." }
+                ]
+            },
+            {
+                title: "Executive Salaries & Fairness",
+                slogan: "Corporate Wealth Distribution vs Social Equity",
+                theme: { primary: "#7209b7", secondary: "#560bad", emoji1: "💰", emoji2: "⚖️" },
+                question: "Directors of large organizations earn much higher salaries than ordinary employees do. Some people think it is necessary, but others are of the opinion that it is unfair. Discuss both views and give your own opinion.",
+                outline: [
+                    { title: "1. Hiểu đề & viết Introduction", desc: "Nêu thực trạng chênh lệch thu nhập khổng lồ giữa giám đốc điều hành (CEOs) và nhân viên cấp dưới. Đưa ra quan điểm thảo luận hai chiều về tính hợp lý kinh tế và tính công bằng xã hội.<br>• Gợi ý Paraphrasing: <span class='highlight-en'>executive remuneration</span> (thù lao điều hành), <span class='highlight-en'>income disparity</span> (sự chênh lệch thu nhập), <span class='highlight-en'>ordinary workforce</span> (lực lượng lao động thông thường)." },
+                    { title: "2. Gợi ý lập luận & phân BODY (40/60)", desc: "Body 1 (40%): Bảo vệ mức lương cao dựa trên áp lực trách nhiệm chiến lược, rủi ro pháp lý và tài năng hiếm có của lãnh đạo. Body 2 (60%): Phản biện tính bất công khi khoảng cách quá xa, gây mất động lực làm việc và bất ổn nội bộ." },
+                    { title: "3. Viết BODY 1: Tính cần thiết của Mức lương cao", desc: "Topic sentence: Mức thù lao điều hành vượt trội là hoàn toàn hợp lý do tính chất khốc liệt và trách nhiệm nặng nề của vị trí lãnh đạo vĩ mô.<br>• Supporting idea 1: Giám đốc phải gánh vác các quyết định chiến lược tối cao (<span class='highlight-en'>high-stakes strategic decisions</span>) định đoạt sinh mệnh của hàng ngàn nhân viên.<br>• Supporting idea 2: Thị trường nhân tài cấp cao (<span class='highlight-en'>executive talent pool</span>) cực kỳ khan hiếm; lương cao là đòn bẩy thu hút người tài giỏi nhất thế giới." },
+                    { title: "4. Viết BODY 2: Góc nhìn về sự Bất công & Hệ lụy", desc: "Topic sentence: Tuy nhiên, khoảng cách thu nhập quá mức (<span class='highlight-en'>exorbitant income gap</span>) sẽ gieo rắc sự bất mãn và làm suy yếu văn hóa doanh nghiệp.<br>• Supporting idea 1: Sự chênh lệch quá lớn khiến nhân viên phổ thông cảm thấy đóng góp của họ bị rẻ rúng, làm giảm năng suất lao động (<span class='highlight-en'>eroding workforce productivity</span>).<br>• Supporting idea 2: Lợi nhuận doanh nghiệp được tạo ra từ sự nỗ lực tập thể (<span class='highlight-en'>collective endeavor</span>), không thể chỉ tích lũy vào túi một vài cá nhân tối cao." },
+                    { title: "5. Viết Conclusion", desc: "Tóm tắt cân bằng: Lãnh đạo xứng đáng nhận lương cao, nhưng ban quản trị cần thiết lập giới hạn tỷ lệ hợp lý để duy trì sự gắn kết và công bằng đạo đức." }
+                ],
+                essay: [
+                    { en: "Introduction: The immense financial chasm between executive remuneration and the wages of the ordinary workforce has ignite intense socio-economic debates. While a segment of corporate analysts deems this pay asymmetry vital for driving market performance, critics denounce it as inherently unjust. In my opinion, although premium compensation is mandatory to attract top-tier leadership, exorbitant income disparity fundamentally destabilizes organizational cohesion.", vi: "Mở bài: Khoảng cách tài chính khổng lồ giữa thù lao điều hành và tiền lương của lực lượng lao động thông thường đã châm ngòi cho các cuộc tranh luận kinh tế - xã hội dữ dội. Trong khi một bộ phận các nhà phân tích doanh nghiệp coi sự bất đối xứng về lương này là quan trọng để thúc đẩy hiệu suất thị trường, các nhà phê bình chỉ trích nó là bất công cố hữu. Theo quan điểm của tôi, mặc dù mức bồi thường cao cấp là bắt buộc để thu hút nhà lãnh đạo cấp cao, sự chênh lệch thu nhập quá mức về cơ bản làm mất ổn định sự gắn kết của tổ chức." },
+                    { en: "Body 1: On the one hand, substantial rewards are justified by the immense responsibilities allocated to corporate directors. Chief executives are tasked with high-stakes strategic decisions that dictate the survival, profitability, and market capitalization of an enterprise. A single misstep can bankrupt an organization, resulting in massive job losses. Furthermore, the global executive talent pool is exceptionally scarce. Offering highly competitive, multimillion-dollar packages is an economic necessity to retain individuals capable of navigating complex multinational regulations.", vi: "Thân bài 1: Một mặt, phần thưởng lớn là hợp lý bởi những trách nhiệm to lớn được phân bổ cho các giám đốc doanh nghiệp. Các giám đốc điều hành được giao nhiệm vụ đưa ra các quyết định chiến lược có rủi ro cao định đoạt sự sống còn, lợi nhuận và vốn hóa thị trường của một doanh nghiệp. Một sai lầm duy nhất có thể làm phá sản một tổ chức, dẫn đến mất việc làm hàng loạt. Hơn nữa, nguồn nhân tài điều hành toàn cầu đặc biệt khan hiếm. Việc đưa ra các gói thầu đa triệu đô la cạnh tranh cao là một nhu cầu kinh tế để giữ chân những cá nhân có khả năng điều hướng các quy định đa quốc gia phức tạp." },
+                    { en: "Body 2: On the other hand, allowing the income gap to widen without constraints creates systemic disadvantages. When ordinary workers witness their compensation stagnate while executive wealth multiplies exponentially, it breeds deep-seated resentment. This widening chasm effectively demoralizes the workforce, thereby eroding workforce productivity and increasing employee turnover rates. Since corporate success is fundamentally a collective endeavor requiring synchronous cooperation across all tiers, allocating disproportionate financial yields to the apex alone is ethically unsustainable.", vi: "Thân bài 2: Mặt khác, việc cho phép khoảng cách thu nhập nới rộng mà không có rào cản sẽ tạo ra những bất lợi mang tính hệ thống. Khi những công nhân bình thường chứng kiến khoản bồi thường của họ trì trệ trong khi tài sản của giám đốc điều hành nhân lên theo cấp số nhân, nó sẽ nuôi dưỡng sự oán giận sâu sắc. Khoảng cách ngày càng rộng này làm giảm tinh thần của lực lượng lao động một cách hiệu quả, từ đó làm xói mòn năng suất lao động và tăng tỷ lệ nghỉ việc của nhân viên. Vì thành công của doanh nghiệp về cơ bản là một nỗ lực tập thể đòi hỏi sự hợp tác đồng bộ giữa tất cả các cấp, việc phân bổ lợi nhuận tài chính không tương xứng chỉ cho phần đỉnh tháp là không thể bền vững về mặt đạo đức." },
+                    { en: "Conclusion: In conclusion, achieving corporate equilibrium requires a nuanced approach to wage distribution. Directors must receive premium salaries reflecting their high-stakes vulnerability, yet progressive boards should introduce relative caps to shield the collective morale of the organization from fragmentation.", vi: "Kết luận: Tóm lại, việc đạt được trạng thái cân bằng của doanh nghiệp đòi hỏi một cách tiếp cận đa sắc thái đối với việc phân phối tiền lương. Các giám đốc phải nhận được mức lương cao phản ánh mức độ rủi ro lớn của họ, tuy nhiên các hội đồng quản trị tiến bộ nên đưa ra các mức trần tương đối để bảo vệ tinh thần tập thể của tổ chức khỏi sự tan rã." }
+                ],
+                vocab: [
+                    { word: "Chasm", type: "noun", detail: "Hố sâu ngăn cách khổng lồ giữa hai giai cấp/đối tượng." },
+                    { word: "Remuneration", type: "noun", detail: "Thù lao, tiền công, tiền bồi dưỡng. Synonyms: Compensation, pay." },
+                    { word: "Asymmetry", type: "noun", detail: "Sự bất đối xứng, không cân bằng giữa hai bên." },
+                    { word: "Denounce", type: "verb", detail: "Chỉ trích dữ dội, lên án công khai. Synonyms: Condemn." },
+                    { word: "Top-tier", type: "adj", detail: "Thuộc tầng lớp đỉnh cao, chất lượng hàng đầu thế giới." },
+                    { word: "Exorbitant", type: "adj", detail: "Quá cao, đắt đỏ, vượt quá mức hợp lý. Synonyms: Excessive." },
+                    { word: "Cohesion", type: "noun", detail: "Sự gắn kết chặt chẽ thành một khối thống nhất." },
+                    { word: "High-stakes", type: "adj", detail: "Có tính chất canh bạc, rủi ro và hệ lụy cực kỳ cao." },
+                    { word: "Capitalization", type: "noun", detail: "Giá trị vốn hóa thị trường của một doanh nghiệp." },
+                    { word: "Misstep", type: "noun", detail: "Bước đi sai lầm, quyết định chệch hướng tai hại." },
+                    { word: "Navigating", type: "verb", detail: "Chèo lái, điều hướng vượt qua (thử thách, luật lệ)." },
+                    { word: "Stagnate", type: "verb", detail: "Đình trệ, đóng băng, không phát triển lên được." },
+                    { word: "Resentment", type: "noun", detail: "Sự oán giận, bất mãn sâu sắc ẩn giấu bên trong." },
+                    { word: "Demoralizes", type: "verb", detail: "Làm suy sụp tinh thần, thui chột ý chí chiến đấu." },
+                    { word: "Turnover rates", type: "phrase", detail: "Tỷ lệ nhân viên xin nghỉ việc và nhảy việc." },
+                    { word: "Collective endeavor", type: "phrase", detail: "Nỗ lực chung mang tính tập thể phối hợp." },
+                    { word: "Synchronous", type: "adj", detail: "Đồng bộ, diễn ra nhịp nhàng cùng lúc." },
+                    { word: "Apex", type: "noun", detail: "Đỉnh tháp, phần ngọn, cấp cao nhất trong sơ đồ." },
+                    { word: "Equilibrium", type: "noun", detail: "Trạng thái cân bằng động lý tưởng. Synonyms: Balance." },
+                    { word: "Morale", type: "noun", detail: "Nhuệ khí, tinh thần đồng đội trong một tập thể." }
+                ],
+                quiz: [
+                    { q: "Từ nào trong danh mục đồng nghĩa với cụm từ 'salary/compensation'?", a: "Remuneration", b: "Chasm", c: "Apex", d: "Misstep", correct: "A", exp: "Remuneration có nghĩa là thù lao, tiền công, đồng nghĩa với salary." },
+                    { q: "Hệ lụy trực tiếp của việc khoảng cách lương quá rộng ở Body 2 là gì?", a: "Eroding workforce productivity and increasing turnover", b: "Increasing global green technology investments", c: "Reducing carbon emissions successfully", d: "Abolishing corporate laws", correct: "A", exp: "Khoảng cách lương quá rộng làm xói mòn năng suất (eroding productivity) và tăng tỷ lệ nhảy việc." },
+                    { q: "Từ 'Apex' dùng để chỉ nhóm đối tượng nào trong sơ đồ doanh nghiệp?", a: "Giám đốc cấp cao nhất", b: "Nhân viên thực tập", c: "Khách hàng phổ thông", d: "Cổ đông nhỏ lẻ", correct: "A", exp: "Apex có nghĩa là đỉnh chóp, tức là nhóm ban quản trị điều hành cao nhất." },
+                    { q: "Cụm từ 'high-stakes strategic decisions' mang ý nghĩa gì?", a: "Quyết định chiến lược có rủi ro và hệ lụy cực lớn", b: "Kế hoạch nghỉ ngơi của nhân viên", c: "Quy trình dọn dẹp văn phòng", d: "Bảng khảo sát ý kiến khách hàng", correct: "A", exp: "High-stakes biểu thị rủi ro cao, được ăn cả ngã về không." },
+                    { q: "Tính từ nào trong bài mô tả một mức giá/thu nhập quá cao vượt giới hạn?", a: "Exorbitant", b: "Synchronous", c: "Top-tier", d: "Stagnate", correct: "A", exp: "Exorbitant nghĩa là quá cao, quá mức, đắt đỏ vô lý." },
+                    { q: "Động từ 'Denounce' thể hiện thái độ gì?", a: "Lên án, chỉ trích mạnh mẽ", b: "Ủng hộ nhiệt tình", c: "Thờ ơ, vô cảm", d: "Khen ngợi công khai", correct: "A", exp: "Denounce mang nghĩa là tố cáo, lên án hoặc chỉ trích gay gắt." },
+                    { q: "Từ 'Chasm' được dịch sát nghĩa ngữ cảnh bài viết là gì?", a: "Hố sâu ngăn cách (về thu nhập)", b: "Tòa nhà văn phòng", c: "Hợp đồng pháp lý", d: "Tiền thưởng cuối năm", correct: "A", exp: "Chasm nghĩa gốc là vết nứt sâu, nghĩa bóng là khoảng cách xa vời vợi giữa các giai cấp." },
+                    { word: "Điền vào chỗ trống: 'Corporate success is fundamentally a ... endeavor.'", a: "collective", b: "exorbitant", c: "stagnate", d: "impotent", correct: "A", exp: "Collective endeavor tức là nỗ lực mang tính tập thể, của cả một đội ngũ." },
+                    { q: "Khi nhân viên thấy lương họ đóng băng ('stagnate'), tâm lý nào sẽ nảy sinh?", a: "Deep-seated resentment", b: "Ecological consciousness", c: "Extreme happiness", d: "Academic burnout", correct: "A", exp: "Lương đình trệ trong khi lãnh đạo giàu lên sẽ tạo ra sự oán giận sâu sắc (resentment)." },
+                    { q: "Từ 'Morale' có nghĩa là gì?", a: "Tinh thần, nhuệ khí của một tập thể", b: "Bài học đạo đức sách vở", c: "Quy chuẩn kế toán", d: "Hợp đồng lao động", correct: "A", exp: "Morale (có chữ e ở cuối) chỉ tinh thần làm việc, nhuệ khí chiến đấu." },
+                    { q: "Từ 'Equilibrium' ở phần kết luận đồng nghĩa với cụm từ nào?", a: "State of balance", b: "Severe production delay", c: "Carbon footprint reduction", d: "Income gap widening", correct: "A", exp: "Equilibrium là trạng thái cân bằng lý tưởng." },
+                    { q: "Tính từ 'Synchronous' chỉ trạng thái hoạt động như thế nào?", a: "Đồng bộ, diễn ra cùng lúc nhịp nhàng", b: "Chậm trễ, ngắt quãng", c: "Độc lập, không liên quan", d: "Hỗn loạn, mất kiểm soát", correct: "A", exp: "Synchronous nghĩa là đồng bộ hóa, phối hợp nhịp nhàng." },
+                    { q: "Bộ phận nào trong doanh nghiệp được tác giả đề xuất giới hạn mức lương trần?", a: "Progressive boards (Hội đồng quản trị tiến bộ)", b: "Ordinary workforce", c: "Government tax inspectors", d: "Juvenile courts", correct: "A", exp: "Kết bài đề xuất các progressive boards nên đưa ra mức giới hạn relative caps." },
+                    { q: "Từ 'Asymmetry' có tiền tố 'a-' mang chức năng gì?", a: "Phủ định (Tạo nghĩa không đối xứng)", b: "Tăng cường mức độ", c: "Chỉ thời gian", d: "Chỉ không gian", correct: "A", exp: "Symmetry là đối xứng, thêm tiền tố 'a-' trở thành bất đối xứng (không cân bằng)." },
+                    { q: "Nếu một giám đốc đưa ra một 'misstep', hậu quả tồi tệ nhất là gì?", a: "Bankrupting the organization", b: "Fostering soft skills", c: "Selling carbon credits", d: "Lowering food prices", correct: "A", exp: "Một bước đi sai lầm (misstep) có thể làm phá sản toàn bộ doanh nghiệp." },
+                    { q: "Thị trường nhân tài cấp cao được gọi là gì trong bài luận?", a: "Executive talent pool", b: "Public transit infrastructure", c: "Grassroots system", d: "Standardized grid", correct: "A", exp: "Executive talent pool nghĩa là nguồn cung/bể nhân tài điều hành cao cấp." },
+                    { q: "Từ loại của từ 'Stagnate' trong câu 'compensation stagnate' là gì?", a: "Verb", b: "Noun", c: "Adjective", d: "Adverb", correct: "A", exp: "Stagnate đóng vai trò động vi ngữ trong câu, chỉ hành động bị đình trệ." },
+                    { q: "Mức lương quá cao của CEOs được biện hộ dựa trên yếu tố hiếm có nào?", a: "The talent pool is exceptionally scarce", b: "They work 24 hours a day", c: "They pay all corporate taxes alone", d: "They avoid extreme weather events", correct: "A", exp: "Do nguồn nhân tài lãnh đạo cấp cao cực kỳ khan hiếm (scarce) nên giá trị thù lao bị đẩy lên cao." },
+                    { q: "Từ nào đồng nghĩa với 'Condemn' xuất hiện trong phần tra cứu?", a: "Denounce", b: "Subsidize", c: "Alleviate", d: "Navigate", correct: "A", exp: "Denounce đồng nghĩa với Condemn (lên án, chỉ trích công khai)." },
+                    { q: "Ý kiến cuối cùng của tác giả về việc phân phối thu nhập là gì?", a: "Needs a nuanced approach with relative caps", b: "CEOs should earn the same as ordinary workers", c: "Governments should take 100% of executive wealth", d: "Abolishing all corporate systems", correct: "A", exp: "Tác giả hướng tới giải pháp đa sắc thái (nuanced approach) có giới hạn tương đối để bảo vệ tinh thần tập thể." }
+                ]
+            },
+            {
+                title: "Juvenile Crime Punishment",
+                slogan: "Juvenile Offenders Accountability vs Parental Liability",
+                theme: { primary: "#e63946", secondary: "#1d3557", emoji1: "🧑‍⚖️", emoji2: "📜" },
+                question: "Some people believe that children that commit crimes should be punished. Others think the parents should be punished instead. Discuss both views and give your own opinion.",
+                outline: [
+                    { title: "1. Hiểu đề & viết Introduction", desc: "Giới thiệu thực trạng báo động về tội phạm vị thành niên. Thảo luận tính hiệu quả giữa việc trừng phạt trực tiếp thủ phạm nhí hay quy trách nhiệm hình sự/dân sự lên cha mẹ.<br>• Gợi ý Paraphrasing: <span class='highlight-en'>juvenile delinquency</span> (tội phạm vị thành niên), <span class='highlight-en'>punitive measures</span> (biện pháp trừng phạt), <span class='highlight-en'>parental liability</span> (trách nhiệm pháp lý của cha mẹ)." },
+                    { title: "2. Gợi ý lập luận & phân BODY (40/60)", desc: "Body 1 (40%): Lập luận tại sao trẻ em trên độ tuổi nhất định phải chịu phạt để nhận thức ranh giới luật pháp. Body 2 (60%): Quy trách nhiệm lớn cho cha mẹ do buông lỏng quản lý, thiếu giáo dục gia đình." },
+                    { title: "3. Viết BODY 1: Trừng phạt Người phạm tội nhỏ tuổi", desc: "Topic sentence: Việc áp dụng các hình thức xử lý tư pháp phù hợp đối với trẻ phạm tội là cần thiết để duy trì tính răn đe của luật pháp.<br>• Supporting idea 1: Nếu hoàn toàn miễn trừ trách nhiệm (<span class='highlight-en'>granting total immunity</span>), trẻ sẽ lầm tưởng luật pháp lỏng lẻo, dễ tái phạm và phát triển thành tội phạm nguy hiểm.<br>• Supporting idea 2: Hình phạt không hẳn là bỏ tù mà là bắt buộc tham gia các trung tâm giáo dưỡng tái hòa nhập cộng đồng (<span class='highlight-en'>rehabilitation centers</span>)." },
+                    { title: "4. Viết BODY 2: Trách nhiệm tối cao thuộc về Cha mẹ", desc: "Topic sentence: Tuy nhiên, công bằng mà nói, cha mẹ phải chịu trách nhiệm pháp lý cốt lõi do sự thờ ơ trong việc giám sát (<span class='highlight-en'>negligent guardianship</span>).<br>• Supporting idea 1: Gia đình là cái nôi định hình hành vi đạo đức. Sự buông lỏng, bạo lực gia đình (<span class='highlight-en'>domestic volatility</span>) trực tiếp đẩy trẻ vào con đường lầm lỡ.<br>• Supporting idea 2: Phạt tiền hoặc bắt cha mẹ hoàn lương cùng con sẽ buộc các gia đình nâng cao tinh thần trách nhiệm (<span class='highlight-en'>parental accountability</span>)." },
+                    { title: "5. Viết Conclusion", desc: "Kết luận kết hợp: Trẻ phạm tội phải cải tạo bắt buộc, đồng thời cha mẹ phải chịu chế tài phạt nặng về mặt dân sự/tài chính để gốc rễ giáo dục được chấn chỉnh." }
+                ],
+                essay: [
+                    { en: "Introduction: The surge in juvenile delinquency has ignited intense global debates over where the legal and moral blameworthiness should reside. While a segment of the public demands strict punitive measures for young offenders, others advocate for parental liability, citing the domestic environment as the root cause. In my opinion, while children must undergo mandatory correction, executing penalties on negligent parents is essential to address the root of the problem.", vi: "Mở bài: Sự gia tăng của tội phạm vị thành niên đã châm ngòi cho các cuộc tranh luận toàn cầu dữ dội về việc trách nhiệm pháp lý và đạo đức nên thuộc về ai. Trong khi một bộ phận công chúng yêu cầu các biện pháp trừng phạt nghiêm khắc đối với những người phạm tội trẻ tuổi, những người khác lại ủng hộ trách nhiệm pháp lý của cha mẹ, coi môi trường gia đình là nguyên nhân gốc rễ. Theo quan điểm của tôi, mặc dù trẻ em phải trải qua quá trình sửa sai bắt buộc, việc thực hiện các hình phạt đối với cha mẹ thờ ơ là điều cần thiết để giải quyết tận gốc vấn đề." },
+                    { en: "Body 1: On the one hand, granting total immunity to underage individuals who break the law undermines social justice and legal deterrence. If youngsters perceive that their age shields them from the ramifications of theft or assault, they are highly likely to become repeat offenders. Therefore, judicial systems must implement institutional interventions. Rather than placing children in adult penitentiaries, sending them to structured rehabilitation centers ensures they comprehend legal boundaries while acquiring social skills necessary for community reintegration.", vi: "Thân bài 1: Một mặt, việc trao quyền miễn trừ hoàn toàn cho các cá nhân vị thành niên vi phạm pháp luật sẽ làm suy yếu công lý xã hội và tính răn đe của pháp luật. Nếu giới trẻ nhận thức được rằng tuổi tác che chở họ khỏi những hệ lụy của tội trộm cắp hoặc hành hung, họ rất có thể trở thành những người tái phạm. Do đó, hệ thống tư pháp phải triển khai các biện pháp can thiệp thể chế. Thay vì đặt trẻ em vào các nhà tù của người lớn, việc gửi chúng đến các trung tâm cải tạo có cấu trúc đảm bảo chúng hiểu được các ranh giới pháp lý đồng thời có được các kỹ năng xã hội cần thiết để tái hòa nhập cộng đồng." },
+                    { en: "Body 2: On the other hand, parental liability is fully justified because negligent guardianship directly facilitates adolescent criminality. In many cases, young delinquents come from broken homes characterized by emotional abandonment or domestic volatility. When parents fail to establish behavioral boundaries or monitor their children's social circles, they fail their societal obligations. Implementing financial fines or compulsory parenting classes on these guardians forces families to take active accountability, thereby preventing domestic neglect before it manifests into street crimes.", vi: "Thân bài 2: Mặt khác, trách nhiệm pháp lý của cha mẹ là hoàn toàn chính đáng vì sự giám sát cẩu thả trực tiếp tạo điều kiện cho tội phạm vị thành niên. Trong nhiều trường hợp, những kẻ phạm tội trẻ tuổi đến từ những gia đình tan vỡ đặc trưng bởi sự bỏ rơi cảm xúc hoặc biến động gia đình. Khi cha mẹ không thiết lập các ranh giới hành vi hoặc giám sát các mối quan hệ xã hội của con cái, họ đã thất bại trong nghĩa vụ xã hội của mình. Việc áp dụng các hình phạt tài chính hoặc các lớp học làm cha mẹ bắt buộc đối với những người giám hộ này buộc các gia đình phải chịu trách nhiệm tích cực, từ đó ngăn chặn sự bỏ bê trong gia đình trước khi nó biểu hiện thành tội phạm đường phố." },
+                    { en: "Conclusion: In conclusion, resolving juvenile lawbreaking cannot be achieved via a single-track approach. Minor offenders must be subject to rigorous rehabilitation to reform their behaviors, but a robust legal system must simultaneously hold parents accountable for failing to cultivate responsible future citizens.", vi: "Kết luận: Tóm lại, việc giải quyết hành vi vi phạm pháp luật của trẻ vị thành niên không thể đạt được thông qua cách tiếp cận đơn đạo. Những người phạm tội ở tuổi vị thành niên phải chịu sự cải tạo nghiêm ngặt để cải thiện hành vi của họ, nhưng một hệ thống pháp luật mạnh mẽ phải đồng thời quy trách nhiệm cho cha mẹ vì đã không nuôi dưỡng những công dân tương lai có trách nhiệm." }
+                ],
+                vocab: [
+                    { word: "Juvenile delinquency", type: "noun", detail: "Hành vi phạm tội của người vị thành niên (dưới 18 tuổi)." },
+                    { word: "Blameworthiness", type: "noun", detail: "Sự đáng bị khiển trách, chịu trách nhiệm về lỗi lầm." },
+                    { word: "Punitive measures", type: "phrase", detail: "Các biện pháp mang tính chất trừng phạt nghiêm khắc." },
+                    { word: "Parental liability", type: "phrase", detail: "Trách nhiệm pháp lý mang tính bắt buộc của cha mẹ." },
+                    { word: "Negligent", type: "adj", detail: "Cẩu thả, lơ là, thờ ơ, thiếu trách nhiệm. Synonyms: Careless." },
+                    { word: "Immunity", type: "noun", detail: "Quyền miễn trừ, sự được bảo vệ khỏi hình phạt." },
+                    { word: "Deterrence", type: "noun", detail: "Tính răn đe, ngăn chặn hành vi xấu xa xảy ra." },
+                    { word: "Assault", type: "noun/verb", detail: "Hành vi hành hung, tấn công thô bạo người khác." },
+                    { word: "Penitentiaries", type: "noun", detail: "Nhà tù, trại giam giữ nghiêm ngặt. Synonyms: Prisons." },
+                    { word: "Rehabilitation centers", type: "phrase", detail: "Trung tâm cai nghiện hoặc trung tâm giáo dưỡng cải tạo." },
+                    { word: "Reintegration", type: "noun", detail: "Sự tái hòa nhập cộng đồng sau khi sửa sai." },
+                    { word: "Guardianship", type: "noun", detail: "Quyền giám hộ, sự chăm sóc bảo vệ của người lớn." },
+                    { word: "Facilitates", type: "verb", detail: "Tạo điều kiện, làm cho việc gì xảy ra dễ dàng hơn." },
+                    { word: "Delinquents", type: "noun", detail: "Những kẻ phạm pháp, thường là người trẻ tuổi." },
+                    { word: "Volatility", type: "noun", detail: "Sự biến động dữ dội, không ổn định (bạo lực gia đình)." },
+                    { word: "Obligations", type: "noun", detail: "Nghĩa vụ, bổn phận bắt buộc phải làm. Synonyms: Duties." },
+                    { word: "Compulsory", type: "adj", detail: "Mang tính cưỡng bách, bắt buộc theo luật. Synonyms: Mandatory." },
+                    { word: "Manifests", type: "verb", detail: "Biểu hiện ra bên ngoài, biến đổi thành thực tế." },
+                    { word: "Lawbreaking", type: "noun", detail: "Hành vi vi phạm pháp luật nói chung." },
+                    { word: "Cultivate", type: "verb", detail: "Nuôi dưỡng, trau dồi (nhân cách, công dân)." }
+                ],
+                quiz: [
+                    { q: "Từ nào đồng nghĩa với danh từ 'Prisons' (nhà tù)?", a: "Penitentiaries", b: "Obligations", c: "Delinquents", d: "Deterrence", correct: "A", exp: "Penitentiaries là thuật ngữ học thuật trang trọng thay thế cho Prisons." },
+                    { q: "Theo Body 2, nguyên nhân cốt lõi dẫn đến tội phạm vị thành niên là gì?", a: "Negligent guardianship and broken homes", b: "High executive compensation plans", c: "Green technology development programs", d: "Standardized examination routines", correct: "A", exp: "Sự giám sát lơ là (negligent guardianship) và gia đình tan vỡ đẩy trẻ vào con đường phạm tội." },
+                    { q: "Cụm từ 'Juvenile delinquency' được định nghĩa là gì?", a: "Tội phạm vị thành niên", b: "Sự xuất sắc học thuật", c: "Ô nhiễm môi trường giao thông", d: "Đòn bẩy kinh tế doanh nghiệp", correct: "A", exp: "Juvenile delinquency là thuật ngữ chỉ người dưới tuổi trưởng thành vi phạm luật hình sự." },
+                    { q: "Nếu trẻ em có quyền miễn trừ hoàn toàn ('total immunity'), hậu quả là gì?", a: "They are highly likely to become repeat offenders", b: "They will stop committing crimes immediately", c: "They will earn higher salaries in the future", d: "They will study harder for testing scores", correct: "A", exp: "Nếu được miễn trừ hoàn toàn, trẻ sẽ nhờn luật và dễ trở thành tội phạm tái diễn." },
+                    { q: "Từ 'Compulsory' mang ý nghĩa nào dưới đây?", a: "Bắt buộc theo luật định", b: "Tự nguyện tham gia", c: "Miễn phí hoàn toàn", d: "Bị cấm đoán", correct: "A", exp: "Compulsory đồng nghĩa với Mandatory, chỉ hành vi mang tính bắt buộc." },
+                    { q: "Động từ 'Facilitates' có nghĩa là gì?", a: "Tạo điều kiện thuận lợi", b: "Ngăn chặn phá hủy", c: "Lên án gay gắt", d: "Trì trệ đóng băng", correct: "A", exp: "Facilitate giúp một quá trình diễn ra dễ dàng, thuận tiện hơn." },
+                    { q: "Từ 'Deterrence' đóng vai trò gì trong hệ thống pháp luật?", a: "Tính răn đe, ngăn chặn tội phạm", b: "Quyền bầu cử cá nhân", c: "Chế độ miễn giảm thuế", d: "Hợp đồng kinh tế", correct: "A", exp: "Deterrence là sự răn đe giúp những người khác sợ hình phạt mà không phạm tội." },
+                    { q: "Gia đình có môi trường bạo lực, biến động được mô tả bằng cụm từ nào?", a: "Domestic volatility", b: "Lucrative venture", c: "Collective endeavor", d: "Holistic development", correct: "A", exp: "Domestic volatility chỉ sự bất ổn, dễ xảy ra xung đột/bạo lực trong nhà." },
+                    { q: "Từ 'Reintegration' ở Body 1 đi kèm tiền tố 're-' mang nghĩa là gì?", a: "Làm lại/Lặp lại hành động hòa nhập", b: "Chống lại", c: "Phía trước", d: "Tách rời", correct: "A", exp: "Integration là hòa nhập, Reintegration là tái hòa nhập (trở lại cộng đồng)." },
+                    { q: "Đối tượng nào được gửi tới 'rehabilitation centers'?", a: "Young offenders / Minor offenders", b: "Visionary CEOs", c: "School teachers", d: "Government officials", correct: "A", exp: "Trẻ em phạm tội được gửi tới trung tâm giáo dưỡng cải tạo thay vì tù người lớn." },
+                    { q: "Tính từ 'Negligent' dùng để phê phán hành vi của ai?", a: "Careless guardians/parents", b: "Hardworking employees", c: "Eco-friendly commuters", d: "Top-tier professors", correct: "A", exp: "Negligent dùng để chỉ sự lơ là, thiếu trách nhiệm của cha mẹ trong việc trông nom con." },
+                    { q: "Từ nào đồng nghĩa với cụm 'Duties/Responsibilities' ở bảng từ vựng?", a: "Obligations", b: "Penitentiaries", c: "Delinquents", d: "Immunity", correct: "A", exp: "Obligations nghĩa là nghĩa vụ, bổn phận bắt buộc phải hoàn thành." },
+                    { q: "Hành vi tấn công thô bạo người khác trong tiếng Anh pháp lý bài đọc là gì?", a: "Assault", b: "Chasm", c: "Burnout", d: "Leverage", correct: "A", exp: "Assault là tội danh hành hung, tấn công gây thương tích." },
+                    { q: "Động từ 'Cultivate' ở câu cuối mang nghĩa bóng là gì?", a: "Nuôi dưỡng, rèn giũa phẩm chất", b: "Trồng trọt lúa gạo", c: "Phạt tiền vi phạm", d: "Xây dựng nhà tù", correct: "A", exp: "Cultivate future citizens nghĩa là nuôi dưỡng những công dân tương lai." },
+                    { q: "Từ 'Blameworthiness' thuộc từ loại gì?", a: "Noun", b: "Verb", c: "Adjective", d: "Adverb", correct: "A", exp: "Hậu tố '-ness' biểu thị đây là một danh từ trừu tượng." },
+                    { q: "Biện pháp nào được đề xuất áp dụng cho cha mẹ để nâng cao ý thức?", a: "Financial fines or compulsory parenting classes", b: "Multimillion-dollar compensation packages", c: "Extracurricular activities integration", d: "Total legal immunity", correct: "A", exp: "Bài viết đề cập phạt tiền hoặc bắt đi học các lớp làm cha mẹ đối với người giám hộ lơ là." },
+                    { q: "Từ 'Lawbreaking' trong bài đồng nghĩa với từ nào?", a: "Criminality / Delinquency", b: "Education", c: "Business", d: "Compliance", correct: "A", exp: "Lawbreaking là hành vi phá luật, đồng nghĩa với tội phạm, phạm pháp." },
+                    { q: "Tác giả đánh giá cách tiếp cận giải quyết vấn đề một chiều là như thế nào?", a: "Single-track approach cannot achieve resolution", b: "It is highly effective", c: "It is backed by green technology", d: "It is economically lucrative", correct: "A", exp: "Kết bài nêu rõ không thể dùng phương án đơn đạo (single-track) để giải quyết tận gốc." },
+                    { q: "Điền từ vào chỗ trống: 'The ... in juvenile delinquency has ignited debates.'", a: "surge", b: "burnout", c: "smog", d: "chasm", correct: "A", exp: "Surge có nghĩa là sự dâng lên, gia tăng đột biến về số lượng." },
+                    { q: "Hệ thống tư pháp được nhắc đến ở Body 1 dùng cụm từ tiếng Anh nào?", a: "Judicial systems", b: "Corporate boards", c: "Transit networks", d: "Academic centers", correct: "A", exp: "Judicial systems mang nghĩa là hệ thống tư pháp, tòa án thi hành pháp luật." }
+                ]
+            }
+        ];
+
+        let currentTopicIndex = 0;
+        let shuffledCurrentQuiz = [];
+
+        // --- WEB AUDIO API SOUND GENERATOR ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                // Happy "Ding" Sound
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'wrong') {
+                // Melancholic Sad Sound
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(110, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.35);
+            }
+        }
+
+        // --- ALGORITHM: SHUFFLE ARRAY ---
+        function shuffleArray(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // --- CORE DYNAMIC THEME ENGINE ---
+        function applyDynamicTheme(data) {
+            document.documentElement.style.setProperty('--primary-color', data.theme.primary);
+            document.documentElement.style.setProperty('--secondary-color', data.theme.secondary);
+            
+            // Build raw inline dynamic pattern SVG background image inject
+            const svgPattern = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><text x="15" y="40" font-size="28" opacity="0.65">${data.theme.emoji1}</text><text x="75" y="90" font-size="28" opacity="0.65">${data.theme.emoji2}</text></svg>`;
+            const encodedSvg = btoa(unescape(encodeURIComponent(svgPattern)));
+            document.getElementById('theme-overlay').style.backgroundImage = `url('data:image/svg+xml;base64,${encodedSvg}')`;
+            
+            // Adjust header slogan text appropriately
+            document.getElementById('sys-slogan').innerText = data.slogan;
+        }
+
+        // --- UI WORKFLOW: RENDER ACTIVE DATA MODULE ---
+        function loadTopicData(index) {
+            const data = essayDataset[index];
+            document.getElementById('current-topic-text').innerText = data.question;
+            
+            applyDynamicTheme(data);
+
+            // 1. Render Tab Template & Outline
+            let templateHTML = `<div class="section-title">📝 Dàn Ý Tư Duy Việt - Anh</div>`;
+            data.outline.forEach(item => {
+                templateHTML += `
+                    <div class="outline-block">
+                        <h4>${item.title}</h4>
+                        <p>${item.desc}</p>
+                    </div>
+                `;
+            });
+            document.getElementById('template-render-zone').innerHTML = templateHTML;
+
+            // 2. Render Tab Essay Model with Smart Translation Nodes
+            let essayHTML = `<div class="section-title">✍️ Bài Luận Mẫu Chi Tiết Band 7.5+</div>`;
+            data.essay.forEach((para, pIdx) => {
+                essayHTML += `
+                    <div class="essay-paragraph">
+                        <p class="essay-text">${para.en}</p>
+                        <button class="translate-btn" onclick="toggleTranslation(${pIdx})">Mở dịch đoạn này 🌟</button>
+                        <div class="translation-box" id="trans-box-${pIdx}">${para.vi}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('essay-render-zone').innerHTML = essayHTML;
+
+            // 3. Render Tab Academic Vocab Table
+            let vocabHTML = '';
+            data.vocab.forEach(item => {
+                vocabHTML += `
+                    <tr>
+                        <td><span class="word-badge">${item.word}</span></td>
+                        <td><span class="type-badge">${item.type}</span></td>
+                        <td>${item.detail}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('vocab-render-zone').innerHTML = vocabHTML;
+
+            // 4. Compile, Shuffle, & Render Tab Gamified Quiz
+            // Deep clone to isolate state
+            shuffledCurrentQuiz = JSON.parse(JSON.stringify(data.quiz));
+            shuffledCurrentQuiz.forEach((quizItem, qIdx) => {
+                quizItem.id = qIdx; // preserve identifier
+                // Construct choice mappings to shuffle answer order elegantly
+                let alternatives = [
+                    { key: "A", text: quizItem.a },
+                    { key: "B", text: quizItem.b },
+                    { key: "C", text: quizItem.c },
+                    { key: "D", text: quizItem.d }
+                ];
+                alternatives = shuffleArray(alternatives);
+                quizItem.shuffledChoices = alternatives;
+            });
+
+            let quizHTML = '';
+            shuffledCurrentQuiz.forEach((quizItem, qIdx) => {
+                quizHTML += `
+                    <div class="quiz-item" id="quiz-card-${qIdx}">
+                        <div class="quiz-question">Câu ${qIdx + 1}: ${quizItem.q}</div>
+                        <div class="options-grid">
+                `;
+                quizItem.shuffledChoices.forEach(choice => {
+                    quizHTML += `
+                        <button class="option-btn" 
+                                data-choice-key="${choice.key}" 
+                                onclick="selectOption(this, ${qIdx}, '${choice.key}')">
+                            ${choice.text}
+                        </button>
+                    `;
+                });
+                quizHTML += `
+                        </div>
+                        <div class="explanation-box" id="explain-${qIdx}">
+                            <strong>Giải thích chi tiết:</strong> ${quizItem.exp}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('quiz-render-zone').innerHTML = quizHTML;
+        }
+
+        // --- USER TABS NAV WORKFLOW ---
+        function switchTab(evt, tabId) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(c => c.classList.remove('active'));
+            
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        function switchTopic(index) {
+            currentTopicIndex = index;
+            const buttons = document.querySelectorAll('.topic-btn');
+            buttons.forEach((b, idx) => {
+                if(idx === index) b.classList.add('active');
+                else b.classList.remove('active');
+            });
+            loadTopicData(index);
+        }
+
+        function toggleTranslation(idx) {
+            const box = document.getElementById(`trans-box-${idx}`);
+            if (box.style.display === 'block') {
+                box.style.display = 'none';
+            } else {
+                box.style.display = 'block';
+            }
+        }
+
+        // --- INTERNAL LOGIC: USER INTERACTIVE OPTION CHOICE ---
+        function selectOption(btn, quizIdx, chosenKey) {
+            const parentCard = document.getElementById(`quiz-card-${quizIdx}`);
+            const siblingButtons = parentCard.querySelectorAll('.option-btn');
+            
+            // Highlight locally on immediate feedback
+            const currentItemData = shuffledCurrentQuiz[quizIdx];
+            currentItemData.userSelected = chosenKey;
+
+            siblingButtons.forEach(b => b.classList.remove('correct', 'wrong'));
+            
+            if (chosenKey === currentItemData.correct) {
+                btn.classList.add('correct');
+                parentCard.classList.remove('wrong-shake');
+                playSound('correct');
+                // Trigger localized mini confetti explosion
+                triggerConfettiBurst();
+            } else {
+                btn.classList.add('wrong');
+                parentCard.classList.remove('wrong-shake');
+                void parentCard.offsetWidth; // trigger reflow for css re-animation
+                parentCard.classList.add('wrong-shake');
+                playSound('wrong');
+            }
+        }
+
+        // --- SUBMIT WORKFLOW & SYSTEM SCORING EVALUATION ---
+        function gradeQuiz() {
+            let correctCount = 0;
+            shuffledCurrentQuiz.forEach((item, idx) => {
+                const card = document.getElementById(`quiz-card-${idx}`);
+                const buttons = card.querySelectorAll('.option-btn');
+                const explanation = document.getElementById(`explain-${idx}`);
+
+                // Unveil explanation box
+                explanation.style.display = "block";
+
+                buttons.forEach(btn => {
+                    const btnKey = btn.getAttribute('data-choice-key');
+                    // Freeze all inputs
+                    btn.classList.add('disabled');
+                    
+                    // Style definitive states
+                    if (btnKey === item.correct) {
+                        btn.classList.add('correct');
+                    }
+                    if (item.userSelected === btnKey && btnKey !== item.correct) {
+                        btn.classList.add('wrong');
+                    }
+                });
+
+                if (item.userSelected === item.correct) {
+                    correctCount++;
+                }
+            });
+
+            // Generate Personalized Feedback Report
+            let evaluationMsg = "";
+            if (correctCount === 20) evaluationMsg = "🏆 THIÊN TÀI ANH NGỮ! Bạn đã đạt điểm số tuyệt đối, cấu trúc phản biện vững như bàn thạch!";
+            else if (correctCount >= 16) evaluationMsg = "🌟 LÀM TỐT LẮM! Kỹ năng đọc hiểu cấu trúc luận điểm của bạn cực kỳ xuất sắc!";
+            else if (correctCount >= 10) evaluationMsg = "🔥 CỐ LÊN NHÉ! Bạn đã nắm được đại ý, hãy rà soát kỹ phần giải thích bên dưới để tối ưu từ vựng học thuật.";
+            else evaluationMsg = "📚 CẦN CỐ GẮNG HƠN! Đọc kỹ bài mẫu và trau dồi bảng từ vựng nâng cao trước khi thử sức lại nhé!";
+
+            // Render Modal Score Dialog card
+            document.getElementById('modal-score').innerText = `${correctCount}/20`;
+            document.getElementById('modal-feedback').innerText = evaluationMsg;
+            document.getElementById('score-modal').classList.add('active');
+
+            if (correctCount >= 15) {
+                triggerMassiveConfettiShower();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('score-modal').classList.remove('active');
+        }
+
+        // --- GAMIFICATION CONFETTI CANVAS ENGINE ---
+        const canvas = document.getElementById("confetti-canvas");
+        const ctx = canvas.getContext("2d");
+        let confettiPieces = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        class Confetti {
+            constructor(x, y, isBurst = false) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 8 + 4;
+                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                this.speedX = isBurst ? (Math.random() * 10 - 5) : (Math.random() * 3 - 1.5);
+                this.speedY = isBurst ? (Math.random() * -10 - 2) : (Math.random() * 4 + 2);
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 10 - 5;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.rotation += this.rotationSpeed;
+                this.speedY += 0.1; // simulate slight gravity gravity
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+                ctx.fillStyle = this.color;
+                ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                ctx.restore();
+            }
+        }
+
+        function triggerConfettiBurst() {
+            const midX = window.innerWidth / 2;
+            const midY = window.innerHeight / 2;
+            for (let i = 0; i < 35; i++) {
+                confettiPieces.push(new Confetti(midX, midY, true));
+            }
+        }
+
+        function triggerMassiveConfettiShower() {
+            for (let i = 0; i < 150; i++) {
+                confettiPieces.push(new Confetti(Math.random() * window.innerWidth, -20, false));
+            }
+        }
+
+        function animateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            confettiPieces.forEach((p, idx) => {
+                p.update();
+                p.draw();
+                // Filter elements gone off screen boundary
+                if (p.y > canvas.height || p.x < 0 || p.x > canvas.width) {
+                    confettiPieces.splice(idx, 1);
+                }
+            });
+            requestAnimationFrame(animateConfetti);
+        }
+        requestAnimationFrame(animateConfetti);
+
+        // --- SYSTEM INITIAL LOADING POINT ---
+        window.onload = function() {
+            loadTopicData(0);
+        };
+    </script>
+</body>
+</html>
